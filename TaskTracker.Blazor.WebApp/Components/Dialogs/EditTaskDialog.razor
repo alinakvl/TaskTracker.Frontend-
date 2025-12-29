@@ -1,0 +1,202 @@
+﻿@* @using TaskTracker.Blazor.Domain.DTOs.Tasks
+@using TaskTracker.Blazor.Domain.DTOs
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form">
+            <MudTextField @bind-Value="model.Title"
+                          Label="Title"
+                          Required="true"
+                          RequiredError="Title is required"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudTextField @bind-Value="model.Description"
+                          Label="Description"
+                          Variant="Variant.Outlined"
+                          Lines="3"
+                          Class="mb-3" />
+
+            <div class="d-flex gap-4">
+                <MudSelect T="int" Label="Priority" @bind-Value="model.Priority" Variant="Variant.Outlined">
+                    <MudSelectItem Value="1">Low</MudSelectItem>
+                    <MudSelectItem Value="2">Medium</MudSelectItem>
+                    <MudSelectItem Value="3">High</MudSelectItem>
+                    <MudSelectItem Value="4">Critical</MudSelectItem>
+                </MudSelect>
+
+                <MudDatePicker Label="Due Date"
+                               @bind-Date="dueDate"
+                               Variant="Variant.Outlined" />
+            </div>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public TaskDto Task { get; set; } 
+
+    private UpdateTaskDto model = new();
+    private DateTime? dueDate;
+    private MudForm form;
+
+    protected override void OnInitialized()
+    {
+        model = new UpdateTaskDto
+        {
+            Id = Task.Id,
+            Title = Task.Title,
+            Description = Task.Description,
+            Priority = Task.Priority
+        };
+        dueDate = Task.DueDate;
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            model.DueDate = dueDate;
+            MudDialog.Close(DialogResult.Ok(model)); 
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+} *@
+
+@using TaskTracker.Blazor.Domain.DTOs.Tasks
+@using TaskTracker.Blazor.Domain.DTOs
+
+
+<div class="modal-backdrop fade show" @onclick="Cancel"></div>
+<div class="modal fade show d-block" tabindex="-1" role="dialog" @onclick="Cancel">
+    <div class="modal-dialog modal-dialog-centered shadow-lg" role="document" @onclick:stopPropagation>
+        <div class="modal-content border-0 animate-fade-in">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-list-check me-2"></i>Edit Task
+                </h5>
+                <button type="button" class="btn-close btn-close-white" @onclick="Cancel" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <EditForm Model="@model" OnValidSubmit="Submit">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Title</label>
+                        <InputText class="form-control" @bind-Value="model.Title" placeholder="What needs to be done?" />
+                        <ValidationMessage For="@(() => model.Title)" class="text-danger small" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <InputTextArea class="form-control" @bind-Value="model.Description" rows="3" placeholder="Add some details..." />
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Priority</label>
+                            <InputSelect class="form-select" @bind-Value="model.Priority">
+                                <option value="1">Low</option>
+                                <option value="2">Medium</option>
+                                <option value="3">High</option>
+                                <option value="4">Critical</option>
+                            </InputSelect>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Due Date</label>
+                            <InputDate class="form-control" @bind-Value="dueDate" />
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger mt-3 mb-0 py-2 small">
+                            <i class="bi bi-exclamation-circle me-2"></i>@errorMessage
+                        </div>
+                    }
+                </EditForm>
+            </div>
+
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-secondary px-4" @onclick="Cancel">Cancel</button>
+                <button type="button" class="btn btn-primary px-4" @onclick="Submit">
+                    <i class="bi bi-save me-1"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1040;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+        opacity: 0.5;
+    }
+
+    .animate-fade-in {
+        animation: taskFadeIn 0.3s ease-out;
+    }
+
+    @@keyframes taskFadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+</style>
+
+@code {
+    [Parameter] public TaskDto Task { get; set; } = new();
+    [Parameter] public EventCallback<UpdateTaskDto?> OnClose { get; set; }
+
+    private UpdateTaskDto model = new();
+    private DateTime? dueDate;
+    private string errorMessage = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        model = new UpdateTaskDto
+        {
+            Id = Task.Id,
+            Title = Task.Title,
+            Description = Task.Description,
+            Priority = Task.Priority
+        };
+        dueDate = Task.DueDate;
+    }
+
+    private async Task Submit()
+    {
+        if (string.IsNullOrWhiteSpace(model.Title))
+        {
+            errorMessage = "Title is required";
+            return;
+        }
+
+        model.DueDate = dueDate;
+        await OnClose.InvokeAsync(model);
+    }
+
+    private Task Cancel() => OnClose.InvokeAsync(null);
+}

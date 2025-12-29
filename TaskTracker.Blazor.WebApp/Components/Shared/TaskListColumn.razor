@@ -1,0 +1,343 @@
+﻿@inject ITaskListService TaskListService
+@inject ITaskService TaskService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudPaper Class="task-list-column" Elevation="2">
+    <div class="list-header">
+        <div class="d-flex align-center justify-space-between">
+            @if (isEditingTitle)
+            {
+                <MudTextField @bind-Value="editedTitle"
+                              Variant="Variant.Text"
+                              Margin="Margin.Dense"
+                              Class="list-title-edit"
+                              @ref="titleField"
+                              OnBlur="SaveTitle"
+                              OnKeyDown="HandleTitleKeyDown" />
+            }
+            else
+            {
+                <MudText Typo="Typo.h6" Class="list-title" @onclick="StartEditTitle">
+                    @TaskList.Title
+                </MudText>
+            }
+            
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small">
+                <MudMenuItem OnClick="StartEditTitle">Rename</MudMenuItem>
+                <MudMenuItem OnClick="DeleteList">Delete List</MudMenuItem>
+            </MudMenu>
+        </div>
+    </div>
+
+    <div class="list-content">
+        @if (TaskList.Tasks.Any())
+        {
+            <MudList T="object" Clickable="true" Dense="true">
+                @foreach (var task in TaskList.Tasks.OrderBy(t => t.Position))
+                {
+                    <MudListItem T="object" Class="task-item">
+                        <div class="task-card">
+                            <MudText Typo="Typo.body2">@task.Title</MudText>
+                            @if (!string.IsNullOrEmpty(task.Description))
+                            {
+                                <MudText Typo="Typo.caption" Color="Color.Default" Class="mt-1">
+                                    @task.Description
+                                </MudText>
+                            }
+                            @if (task.DueDate.HasValue)
+                            {
+                                <MudChip T="string" Size="Size.Small" Class="mt-2">
+                                    @task.DueDate.Value.ToString("MMM dd")
+                                </MudChip>
+                            }
+                        </div>
+                    </MudListItem>
+                }
+            </MudList>
+        }
+        else
+        {
+            <div class="pa-4 text-center">
+                <MudText Typo="Typo.body2" Color="Color.Default">
+                    No tasks yet
+                </MudText>
+            </div>
+        }
+    </div>
+
+    <div class="list-footer pa-2">
+        @if (showAddTask)
+        {
+            <MudPaper Class="pa-2" Elevation="0">
+                <MudTextField @bind-Value="newTaskTitle"
+                              Label="Task title"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Class="mb-2" />
+                <div class="d-flex gap-2">
+                    <MudButton Size="Size.Small"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               OnClick="AddTask">
+                        Add
+                    </MudButton>
+                    <MudButton Size="Size.Small"
+                               Variant="Variant.Text"
+                               OnClick="@(() => showAddTask = false)">
+                        Cancel
+                    </MudButton>
+                </div>
+            </MudPaper>
+        }
+        else
+        {
+            <MudButton StartIcon="@Icons.Material.Filled.Add"
+                       Variant="Variant.Text"
+                       FullWidth="true"
+                       OnClick="@(() => showAddTask = true)">
+                Add Task
+            </MudButton>
+        }
+    </div>
+</MudPaper>
+
+<style>
+    .task-list-column {
+        min-width: 280px;
+        max-width: 280px;
+        background-color: #f4f5f7;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 250px);
+    }
+
+    .list-header {
+        padding: 12px;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .list-title {
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        flex: 1;
+    }
+
+    .list-title:hover {
+        background-color: rgba(0,0,0,0.04);
+    }
+
+    .list-title-edit {
+        flex: 1;
+    }
+
+    .list-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 8px;
+    }
+
+    .task-item {
+        margin-bottom: 8px;
+        border-radius: 8px;
+        background-color: white;
+    }
+
+    .task-card {
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    .task-card:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+
+    .list-footer {
+        border-top: 1px solid rgba(0,0,0,0.08);
+    }
+</style>
+
+@code {
+    [Parameter] public TaskListDto TaskList { get; set; } = null!;
+    [Parameter] public Guid BoardId { get; set; }
+    [Parameter] public EventCallback OnTaskUpdated { get; set; }
+    [Parameter] public EventCallback OnListDeleted { get; set; }
+
+    private bool isEditingTitle = false;
+    private bool showAddTask = false;
+    private string editedTitle = string.Empty;
+    private string newTaskTitle = string.Empty;
+    private MudTextField<string>? titleField;
+
+    private async Task StartEditTitle()
+    {
+        editedTitle = TaskList.Title;
+        isEditingTitle = true;
+        await Task.Delay(100);
+        if (titleField != null)
+        {
+            await titleField.FocusAsync();
+        }
+    }
+
+    private async Task SaveTitle()
+    {
+        if (string.IsNullOrWhiteSpace(editedTitle))
+        {
+            editedTitle = TaskList.Title;
+            isEditingTitle = false;
+            return;
+        }
+
+        if (editedTitle.Trim() != TaskList.Title)
+        {
+            var updateDto = new UpdateTaskListDto
+            {
+                Title = editedTitle.Trim(),
+                Position = TaskList.Position
+            };
+
+            var updated = await TaskListService.UpdateTaskListAsync(TaskList.Id, updateDto);
+            if (updated != null)
+            {
+                Snackbar.Add("List renamed", Severity.Success);
+                await OnTaskUpdated.InvokeAsync();
+            }
+            else
+            {
+                Snackbar.Add("Failed to rename list", Severity.Error);
+            }
+        }
+
+        isEditingTitle = false;
+    }
+
+    private async Task HandleTitleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SaveTitle();
+        }
+        else if (e.Key == "Escape")
+        {
+            isEditingTitle = false;
+        }
+    }
+
+    // private async Task DeleteList()
+    // {
+    //     var result = await DialogService.ShowMessageBox(
+    //         "Delete List",
+    //         $"Are you sure you want to delete '{TaskList.Title}'? All tasks in this list will be deleted.",
+    //         yesText: "Delete",
+    //         cancelText: "Cancel");
+
+    //     if (result == true)
+    //     {
+    //         try
+    //         {
+               
+    //             var success = await TaskListService.DeleteTaskListAsync(TaskList.Id);
+
+    //             if (success)
+    //             {
+    //                 Snackbar.Add("List deleted", Severity.Success);
+                    
+    //                 await OnListDeleted.InvokeAsync();
+    //             }
+    //             else
+    //             {
+    //                 Snackbar.Add("Failed to delete list", Severity.Error);
+    //             }
+    //         }
+    //         catch (Exception ex)
+    //         {
+                
+    //             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+    //             Console.WriteLine($"Delete error: {ex}");
+    //         }
+           
+    //     }
+    // }
+    private async Task DeleteList()
+    {
+        var result = await DialogService.ShowMessageBox(
+            "Delete List",
+            $"Are you sure you want to delete '{TaskList.Title}'? All tasks in this list will be deleted.",
+            yesText: "Delete",
+            cancelText: "Cancel");
+
+        if (result == true)
+        {
+            try
+            {
+                
+                var success = await TaskListService.DeleteTaskListAsync(TaskList.Id);
+
+                if (success)
+                {
+                    await Task.Delay(100);
+
+                    Snackbar.Add("List deleted", Severity.Success);
+
+                    await OnListDeleted.InvokeAsync();
+                }
+                else
+                {
+                    Snackbar.Add("Failed to delete list", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+                Console.WriteLine($"Delete error: {ex}");
+            }
+        }
+    }
+
+    // private Task AddTask()
+    // {
+    //     Snackbar.Add("Task creation not yet implemented", Severity.Info);
+    //     showAddTask = false;
+    //     newTaskTitle = string.Empty;
+    //     return Task.CompletedTask;
+    // }
+    private async Task AddTask()
+    {
+        if (string.IsNullOrWhiteSpace(newTaskTitle))
+        {
+            Snackbar.Add("Task title is required", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            var createTaskDto = new CreateTaskDto
+            {
+                ListId = TaskList.Id,      
+                Title = newTaskTitle.Trim(),
+                Description = "",          
+                Priority = 2,              
+                AssignedUserId = null,
+                DueDate = null
+            };
+
+           
+            var createdTask = await TaskService.CreateTaskAsync(createTaskDto);
+
+            if (createdTask != null)
+            {
+                Snackbar.Add("Task added successfully", Severity.Success);
+                newTaskTitle = string.Empty;
+                showAddTask = false;
+                await OnTaskUpdated.InvokeAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+}
