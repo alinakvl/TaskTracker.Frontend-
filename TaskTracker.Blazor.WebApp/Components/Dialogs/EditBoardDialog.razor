@@ -1,0 +1,85 @@
+﻿@using TaskTracker.Blazor.Domain.DTOs
+@inject IBoardService BoardService
+@inject ISnackbar Snackbar
+
+<div class="modal-backdrop fade show" @onclick="Cancel"></div>
+
+<div class="modal fade show d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg animate-fade-in">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Edit Board</h5>
+                <button type="button" class="btn-close btn-close-white" @onclick="Cancel"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Title</label>
+                    <input type="text" class="form-control" @bind="updateBoard.Title" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Description</label>
+                    <textarea class="form-control" rows="3" @bind="updateBoard.Description"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Background Color</label>
+                    <input type="color" class="form-control form-control-color" @bind="updateBoard.BackgroundColor" />
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button class="btn btn-outline-secondary" @onclick="Cancel">Cancel</button>
+                <button class="btn btn-primary" @onclick="SaveChanges" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1"></span>
+                    }
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public BoardDto Board { get; set; } = null!;
+    [Parameter] public EventCallback<BoardDto?> OnClose { get; set; }
+    private UpdateBoardDto updateBoard = new();
+    private bool isSaving = false;
+
+    protected override void OnInitialized()
+    {
+        updateBoard = new UpdateBoardDto
+        {
+            Title = Board.Title,
+            Description = Board.Description,
+            BackgroundColor = Board.BackgroundColor
+        };
+    }
+
+    private async Task SaveChanges()
+    {
+        if (string.IsNullOrWhiteSpace(updateBoard.Title))
+        {
+            Snackbar.Add("Board title is required", Severity.Warning);
+            return;
+        }
+        isSaving = true;
+        try
+        {
+            var updated = await BoardService.UpdateBoardAsync(Board.Id, updateBoard);
+            if (updated != null)
+            {
+                Snackbar.Add("Board updated successfully!", Severity.Success);
+                await OnClose.InvokeAsync(updated);
+            }
+        }
+        catch
+        {
+            Snackbar.Add("Failed to update board", Severity.Error);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+    private Task Cancel() => OnClose.InvokeAsync(null);
+}
