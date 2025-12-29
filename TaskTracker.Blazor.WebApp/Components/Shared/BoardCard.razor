@@ -1,0 +1,131 @@
+﻿@inject IBoardService BoardService
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudCard Elevation="2"
+         Class="board-card-hover"
+         Style="@($"border-left: 6px solid {Board.BackgroundColor}; height: 100%; cursor: pointer;")"
+         @onclick="@(() => Navigation.NavigateTo($"/boards/{Board.Id}"))">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6" Color="Color.Inherit">@Board.Title</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert" 
+                     Color="Color.Default" 
+                     Size="Size.Small"
+                     @onclick:stopPropagation="true">
+                <MudMenuItem OnClick="EditBoard">Edit</MudMenuItem>
+                <MudMenuItem OnClick="ManageMembers">Members</MudMenuItem>
+                <MudMenuItem OnClick="ArchiveBoard">Archive</MudMenuItem>
+                <MudMenuItem OnClick="DeleteBoard">Delete</MudMenuItem>
+            </MudMenu>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (!string.IsNullOrEmpty(Board.Description))
+        {
+            <MudText Typo="Typo.body2" Class="mb-3" Style="color: gray; min-height: 40px;">
+                @Board.Description
+            </MudText>
+        }
+        <div class="d-flex gap-2 mt-auto">
+            <MudChip T="string" Size="Size.Small" Icon="@Icons.Material.Filled.Task" Variant="Variant.Outlined" Color="Color.Primary">
+                @Board.TasksCount Tasks
+            </MudChip>
+            <MudChip T="string" Size="Size.Small" Icon="@Icons.Material.Filled.People" Variant="Variant.Outlined" Color="Color.Secondary">
+                @Board.MembersCount Members
+            </MudChip>
+        </div>
+    </MudCardContent>
+</MudCard>
+
+@if (showEditDialog)
+{
+    <EditBoardDialog Board="Board" OnClose="HandleEditClose" />
+}
+
+@if (showMembersDialog)
+{
+    <BoardMembersDialog Board="Board" OnClose="HandleMembersClose" />
+}
+
+<style>
+    .board-card-hover {
+        transition: transform 0.2s, box-shadow 0.2s;
+        background-color: white;
+    }
+    .board-card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+</style>
+
+@code {
+    [Parameter] public BoardDto Board { get; set; } = null!;
+    [Parameter] public EventCallback OnDeleted { get; set; }
+
+    private bool showEditDialog = false;
+    private bool showMembersDialog = false;
+
+    private void EditBoard() => showEditDialog = true;
+    private void ManageMembers() => showMembersDialog = true;
+
+    private async Task HandleEditClose(BoardDto? updatedBoard)
+    {
+        showEditDialog = false;
+        if (updatedBoard != null)
+        {
+            Board.Title = updatedBoard.Title;
+            Board.Description = updatedBoard.Description;
+            Board.BackgroundColor = updatedBoard.BackgroundColor;
+            
+            await OnDeleted.InvokeAsync(); 
+            StateHasChanged();
+        }
+    }
+
+    private void HandleMembersClose()
+    {
+        showMembersDialog = false;
+       
+    }
+
+    private async Task ArchiveBoard()
+    {
+        var success = await BoardService.ArchiveBoardAsync(Board.Id);
+        if (success)
+        {
+            Snackbar.Add("Board archived", Severity.Success);
+            await OnDeleted.InvokeAsync();
+        }
+        else
+        {
+            Snackbar.Add("Failed to archive board", Severity.Error);
+        }
+    }
+
+    private async Task DeleteBoard()
+    {
+       
+        bool? result = await DialogService.ShowMessageBox(
+            "Confirm Delete",
+            $"Are you sure you want to delete '{Board.Title}'? This action cannot be undone.",
+            yesText: "Delete", cancelText: "Cancel");
+
+        if (result == true)
+        {
+            var success = await BoardService.DeleteBoardAsync(Board.Id);
+            if (success)
+            {
+                Snackbar.Add("Board deleted", Severity.Success);
+                await OnDeleted.InvokeAsync();
+            }
+            else
+            {
+                Snackbar.Add("Failed to delete board", Severity.Error);
+            }
+        }
+    }
+}
