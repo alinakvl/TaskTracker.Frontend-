@@ -1,0 +1,249 @@
+﻿@* @inject IUserService UserService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6" Class="mb-4">Change User Role</MudText>
+
+        <MudText Typo="Typo.body2" Color="Color.Default" Class="mb-4">
+            Select a new role for this user. This will affect their permissions and access level.
+        </MudText>
+
+        <MudRadioGroup T="string" @bind-SelectedOption="selectedRole" Class="mb-4">
+            <MudRadio T="string" Option="@("Admin")" Color="Color.Error">
+                <div class="d-flex align-center gap-2">
+                    <MudIcon Icon="@Icons.Material.Filled.AdminPanelSettings" Color="Color.Error" />
+                    <div>
+                        <MudText Typo="Typo.body1"><strong>Admin</strong></MudText>
+                        <MudText Typo="Typo.caption">Full access to all features</MudText>
+                    </div>
+                </div>
+            </MudRadio>
+
+            <MudRadio T="string" Option="@("User")" Color="Color.Success">
+                <div class="d-flex align-center gap-2">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Success" />
+                    <div>
+                        <MudText Typo="Typo.body1"><strong>User</strong></MudText>
+                        <MudText Typo="Typo.caption">Standard user access</MudText>
+                    </div>
+                </div>
+            </MudRadio>
+
+            <MudRadio T="string" Option="@("Guest")" Color="Color.Info">
+                <div class="d-flex align-center gap-2">
+                    <MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Info" />
+                    <div>
+                        <MudText Typo="Typo.body1"><strong>Guest</strong></MudText>
+                        <MudText Typo="Typo.caption">Read-only access</MudText>
+                    </div>
+                </div>
+            </MudRadio>
+        </MudRadioGroup>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Submit"
+                   Disabled="@(string.IsNullOrEmpty(selectedRole) || isSubmitting)">
+            @if (isSubmitting)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                <text>Change Role</text>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = null!;
+  
+
+    [Parameter]
+    public Guid UserId { get; set; }
+
+    [Parameter]
+    public string CurrentRole { get; set; } = string.Empty;
+
+    private string selectedRole = string.Empty;
+    private string errorMessage = string.Empty;
+    private bool isSubmitting = false;
+
+    protected override void OnInitialized()
+    {
+        selectedRole = CurrentRole;
+    }
+
+    private async Task Submit()
+    {
+        errorMessage = string.Empty;
+
+        if (string.IsNullOrEmpty(selectedRole))
+        {
+            errorMessage = "Please select a role";
+            return;
+        }
+
+        if (selectedRole == CurrentRole)
+        {
+            Snackbar.Add("Role unchanged", Severity.Info);
+            MudDialog.Close();
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var success = await UserService.ChangeUserRoleAsync(UserId, selectedRole);
+
+            if (success)
+            {
+                Snackbar.Add($"Role changed to {selectedRole} successfully! ", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(selectedRole));
+            }
+            else
+            {
+                errorMessage = "Failed to change role";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
+ *@
+
+@inject IUserService UserService
+@inject ISnackbar Snackbar
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1050;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Change User Role</h5>
+                <button type="button" class="btn-close" @onclick="Cancel"></button>
+            </div>
+
+            <div class="modal-body">
+                <p class="text-muted small mb-3">Select a new role for this user.</p>
+
+                <div class="list-group">
+                    <label class="list-group-item d-flex gap-2 py-3" style="cursor: pointer;">
+                        <input class="form-check-input" type="radio" name="role" checked="@(selectedRole == "Admin")" @onchange="@(() => selectedRole = "Admin")">
+                        <span>
+                            <strong>Admin</strong>
+                            <small class="d-block text-muted">Full access to all features </small>
+                        </span>
+                    </label>
+                    <label class="list-group-item d-flex gap-2 py-3" style="cursor: pointer;">
+                        <input class="form-check-input" type="radio" name="role" checked="@(selectedRole == "User")" @onchange="@(() => selectedRole = "User")">
+                        <span>
+                            <strong>User</strong>
+                            <small class="d-block text-muted">Standard user access </small>
+                        </span>
+                    </label>
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger mt-3">@errorMessage</div>
+                }
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" @onclick="Submit" disabled="@isSubmitting">
+                    @if (isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm"></span>
+                    }
+                    else
+                    {
+                        <span>Change Role</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Guid UserId { get; set; }
+    [Parameter] public string CurrentRole { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string?> OnClose { get; set; }
+
+    private string selectedRole = string.Empty;
+    private string errorMessage = string.Empty;
+    private bool isSubmitting = false;
+
+    protected override void OnInitialized()
+    {
+        selectedRole = CurrentRole;
+    }
+
+ 
+    private async Task Submit()
+    {
+      
+        if (selectedRole == CurrentRole)
+        {
+            await OnClose.InvokeAsync(null);
+            return;
+        }
+
+        isSubmitting = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            
+            var roleDto = new ChangeRoleDto
+            {
+                Role = selectedRole
+            };
+
+           
+            var success = await UserService.ChangeUserRoleAsync(UserId, roleDto);
+
+            if (success)
+            {
+                await OnClose.InvokeAsync(selectedRole);
+            }
+            else
+            {
+                errorMessage = "Failed to update role on server.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private Task Cancel() => OnClose.InvokeAsync(null);
+}

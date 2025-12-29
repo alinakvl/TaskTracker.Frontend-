@@ -1,0 +1,386 @@
+﻿@* @inject IUserService UserService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6" Class="mb-4">Edit User</MudText>
+
+        <MudTextField @bind-Value="model.FirstName"
+                      Label="First Name"
+                      Variant="Variant.Outlined"
+                      Required="true"
+                      Class="mb-4" />
+
+        <MudTextField @bind-Value="model.LastName"
+                      Label="Last Name"
+                      Variant="Variant.Outlined"
+                      Required="true"
+                      Class="mb-4" />
+
+        <MudTextField @bind-Value="model.AvatarUrl"
+                      Label="Avatar URL (Optional)"
+                      Variant="Variant.Outlined"
+                      HelperText="Link to profile picture"
+                      Class="mb-4" />
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-3">@errorMessage</MudAlert>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Submit"
+                   Disabled="@isSubmitting">
+            @if (isSubmitting)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                <text>Save Changes</text>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public Guid UserId { get; set; }
+
+    [Parameter]
+    public UserDto? ExistingUser { get; set; }
+
+    private UpdateUserDto model = new();
+    private string errorMessage = string.Empty;
+    private bool isSubmitting = false;
+
+    protected override void OnInitialized()
+    {
+        if (ExistingUser != null)
+        {
+            model.FirstName = ExistingUser.FirstName;
+            model.LastName = ExistingUser.LastName;
+            model.AvatarUrl = ExistingUser.AvatarUrl;
+        }
+    }
+
+    private async Task Submit()
+    {
+        errorMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(model.FirstName))
+        {
+            errorMessage = "First name is required";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(model.LastName))
+        {
+            errorMessage = "Last name is required";
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var updated = await UserService.UpdateUserAsync(UserId, model);
+
+            if (updated != null)
+            {
+                Snackbar.Add("User updated successfully! ", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(updated));
+            }
+            else
+            {
+                errorMessage = "Failed to update user";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+} *@
+
+
+@* @inject IUserService UserService
+
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1050;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit User</h5>
+                <button type="button" class="btn-close" @onclick="Cancel" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-control" @bind="model.FirstName" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-control" @bind="model.LastName" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Avatar URL (Optional)</label>
+                    <input type="text" class="form-control" @bind="model.AvatarUrl" placeholder="Link to profile picture" />
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger mt-3" role="alert">
+                        @errorMessage
+                    </div>
+                }
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="Cancel" disabled="@isSubmitting">Cancel</button>
+                <button type="button" class="btn btn-primary" @onclick="Submit" disabled="@isSubmitting">
+                    @if (isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="ms-1">Saving...</span>
+                    }
+                    else
+                    {
+                        <span>Save Changes</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Guid UserId { get; set; }
+    [Parameter] public UserDto? ExistingUser { get; set; }
+
+    [Parameter] public EventCallback<UserDto?> OnClose { get; set; }
+
+    private UpdateUserDto model = new();
+    private string errorMessage = string.Empty;
+    private bool isSubmitting = false;
+
+    protected override void OnInitialized()
+    {
+        if (ExistingUser != null)
+        {
+            model.FirstName = ExistingUser.FirstName;
+            model.LastName = ExistingUser.LastName;
+            model.AvatarUrl = ExistingUser.AvatarUrl;
+        }
+    }
+
+    private async Task Submit()
+    {
+        errorMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(model.FirstName) || string.IsNullOrWhiteSpace(model.LastName))
+        {
+            errorMessage = "First and Last names are required";
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var updated = await UserService.UpdateUserAsync(UserId, model);
+
+            if (updated != null)
+            {
+               
+                await OnClose.InvokeAsync(updated);
+            }
+            else
+            {
+                errorMessage = "Failed to update user";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private async Task Cancel()
+    {
+       
+        await OnClose.InvokeAsync(null);
+    }
+} *@
+
+
+@inject IUserService UserService
+
+<div class="modal-backdrop fade show" @onclick="Cancel"></div>
+
+<div class="modal fade show d-block" tabindex="-1" role="dialog" @onclick="Cancel">
+    <div class="modal-dialog modal-dialog-centered shadow-lg" role="document" @onclick:stopPropagation>
+        <div class="modal-content border-0 animate-fade-in">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil-square me-2"></i>Edit User Profile
+                </h5>
+                <button type="button" class="btn-close btn-close-white" @onclick="Cancel" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">First Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control" @bind="model.FirstName" placeholder="Enter first name" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Last Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                        <input type="text" class="form-control" @bind="model.LastName" placeholder="Enter last name" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Avatar URL</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-image"></i></span>
+                        <input type="text" class="form-control" @bind="model.AvatarUrl" placeholder="https://example.com/photo.jpg" />
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger d-flex align-items-center animate-fade-in" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div>@errorMessage</div>
+                    </div>
+                }
+            </div>
+
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-secondary px-4" @onclick="Cancel" disabled="@isSubmitting">Cancel</button>
+                <button type="button" class="btn btn-primary px-4" @onclick="Submit" disabled="@isSubmitting">
+                    @if (isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        <span>Saving...</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-check-lg me-1"></i>
+                        <span>Save Changes</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1040;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+        opacity: 0.5;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+</style>
+
+@code {
+    [Parameter] public Guid UserId { get; set; }
+    [Parameter] public UserDto? ExistingUser { get; set; }
+    [Parameter] public EventCallback<UserDto?> OnClose { get; set; }
+
+    private UpdateUserDto model = new();
+    private string errorMessage = string.Empty;
+    private bool isSubmitting = false;
+
+    protected override void OnInitialized()
+    {
+        if (ExistingUser != null)
+        {
+            model.FirstName = ExistingUser.FirstName;
+            model.LastName = ExistingUser.LastName;
+            model.AvatarUrl = ExistingUser.AvatarUrl;
+        }
+    }
+
+    private async Task Submit()
+    {
+        errorMessage = string.Empty;
+        if (string.IsNullOrWhiteSpace(model.FirstName) || string.IsNullOrWhiteSpace(model.LastName))
+        {
+            errorMessage = "First and Last names are required";
+            return;
+        }
+
+        isSubmitting = true;
+        try
+        {
+            var updated = await UserService.UpdateUserAsync(UserId, model);
+            if (updated != null)
+            {
+                await OnClose.InvokeAsync(updated);
+            }
+            else
+            {
+                errorMessage = "Failed to update user";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private Task Cancel() => OnClose.InvokeAsync(null);
+}

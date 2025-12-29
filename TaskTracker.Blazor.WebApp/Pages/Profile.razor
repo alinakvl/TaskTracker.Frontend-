@@ -1,0 +1,303 @@
+﻿@* @page "/profile"
+@page "/me"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IAuthService AuthService
+@inject IUserService UserService
+@inject ITaskService TaskService
+@inject IBoardService BoardService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<PageTitle>My Profile - TaskTracker</PageTitle>
+
+@if (isLoading)
+{
+    <div class="d-flex justify-center align-center" style="min-height: 400px;">
+        <MudProgressCircular Size="Size.Large" Indeterminate="true" Color="Color.Primary" />
+    </div>
+}
+else if (currentUser != null)
+{
+    <MudGrid>
+        <MudItem xs="12" md="4">
+            <MudPaper Elevation="2" Class="pa-6">
+                <div class="text-center mb-4">
+                    <MudAvatar Size="Size.Large"
+                               Color="Color.Primary"
+                               Style="width: 120px; height: 120px; font-size: 48px; margin: 0 auto;">
+                       
+                        @(currentUser.FirstName?.FirstOrDefault().ToString().ToUpper() ?? "?")
+                    </MudAvatar>
+
+                    <MudButton Variant="Variant.Text"
+                               Color="Color.Primary"
+                               Size="Size.Small"
+                               StartIcon="@(string.IsNullOrEmpty(currentUser.AvatarUrl) ? Icons.Material.Filled.Upload : Icons.Material.Filled.Edit)"
+                               Class="mt-2">
+                        @(string.IsNullOrEmpty(currentUser.AvatarUrl) ? "Upload Avatar" : "Change Avatar")
+                    </MudButton>
+                </div>
+
+                <div class="text-center mb-4">
+                    <MudText Typo="Typo.h5" Class="mb-2">
+                        @currentUser.FullName
+                    </MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Default" Class="mb-2">
+                        @currentUser.Email
+                    </MudText>
+                 
+                    <MudChip T="string" Color="@GetRoleColor(currentUser.Role)" Size="Size.Small">
+                        @currentUser.Role
+                    </MudChip>
+                </div>
+
+                <MudDivider Class="my-4" />
+
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Edit"
+                           FullWidth="true"
+                           OnClick="@(() => isEditMode = true)"
+                           Class="mb-2">
+                    Edit Profile
+                </MudButton>
+
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Material.Filled.Lock"
+                           FullWidth="true"
+                           OnClick="OpenChangePassword">
+                    Change Password
+                </MudButton>
+            </MudPaper>
+
+            <MudPaper Elevation="2" Class="pa-4 mt-4">
+                <MudText Typo="Typo.h6" Class="mb-3">
+                    <MudIcon Icon="@Icons.Material.Filled.BarChart" Class="mr-2" />
+                    Statistics
+                </MudText>
+
+                <div class="stat-item">
+                    <div class="d-flex justify-space-between align-center mb-3">
+                        <div class="d-flex align-center gap-2">
+                            <MudIcon Icon="@Icons.Material.Filled.ViewKanban" Color="Color.Primary" />
+                            <MudText>Boards</MudText>
+                        </div>
+                        <MudText Typo="Typo.h6">@stats.BoardsCount</MudText>
+                    </div>
+
+                    <div class="d-flex justify-space-between align-center mb-3">
+                        <div class="d-flex align-center gap-2">
+                            <MudIcon Icon="@Icons.Material.Filled.Task" Color="Color.Info" />
+                            <MudText>Active Tasks</MudText>
+                        </div>
+                        <MudText Typo="Typo.h6">@stats.ActiveTasksCount</MudText>
+                    </div>
+
+                    <div class="d-flex justify-space-between align-center mb-3">
+                        <div class="d-flex align-center gap-2">
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" />
+                            <MudText>Completed</MudText>
+                        </div>
+                        <MudText Typo="Typo.h6">@stats.CompletedCount</MudText>
+                    </div>
+
+                    <MudDivider Class="my-3" />
+
+                    <div class="d-flex justify-space-between align-center">
+                        <MudText Typo="Typo.body2" Color="Color.Default">Completion Rate</MudText>
+                        <MudText Typo="Typo.h6" Color="Color.Success">@stats.CompletionRate%</MudText>
+                    </div>
+                    <MudProgressLinear Value="@stats.CompletionRate"
+                                       Color="Color.Success"
+                                       Size="Size.Large"
+                                       Rounded="true"
+                                       Class="mt-2" />
+                </div>
+            </MudPaper>
+
+            <MudPaper Elevation="2" Class="pa-4 mt-4">
+                <MudText Typo="Typo.h6" Class="mb-3">Quick Links</MudText>
+                <MudList T="string" Dense="true">
+                    <MudListItem T="string" Icon="@Icons.Material.Filled.Dashboard" OnClick="@(() => Navigation.NavigateTo("/"))" IconColor="Color.Primary">Dashboard</MudListItem>
+                    <MudListItem T="string" Icon="@Icons.Material.Filled.ViewKanban" OnClick="@(() => Navigation.NavigateTo("/boards"))" IconColor="Color.Info">My Boards</MudListItem>
+                    <MudListItem T="string" Icon="@Icons.Material.Filled.Task" OnClick="@(() => Navigation.NavigateTo("/tasks"))" IconColor="Color.Success">My Tasks</MudListItem>
+                </MudList>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="8">
+            @if (isEditMode)
+            {
+                <MudPaper Elevation="2" Class="pa-6">
+                    <div class="d-flex justify-space-between align-center mb-4">
+                        <MudText Typo="Typo.h5"><MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-2" />Edit Profile</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="CancelEdit" />
+                    </div>
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="editModel.FirstName" Label="First Name" Variant="Variant.Outlined" Required="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="editModel.LastName" Label="Last Name" Variant="Variant.Outlined" Required="true" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="editModel.AvatarUrl" Label="Avatar URL" Variant="Variant.Outlined" />
+                        </MudItem>
+                    </MudGrid>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveProfile" Disabled="@isSaving">
+                            @(isSaving ? "Saving..." : "Save Changes")
+                        </MudButton>
+                        <MudButton Variant="Variant.Outlined" OnClick="CancelEdit">Cancel</MudButton>
+                    </div>
+                </MudPaper>
+            }
+            else
+            {
+                <MudPaper Elevation="2">
+                    <MudTabs Elevation="0" Rounded="true" PanelClass="pa-6" Color="Color.Primary">
+                        <MudTabPanel Text="Overview" Icon="@Icons.Material.Filled.Dashboard">
+                            <MudText Typo="Typo.h6" Class="mb-4">Account Overview</MudText>
+                            <MudGrid>
+                                <MudItem xs="12" sm="6">
+                                    <MudPaper Class="pa-4" Elevation="0" Outlined="true">
+                                        <MudText Typo="Typo.caption">Account Status</MudText>
+                                        <MudChip T="string" Color="Color.Success" Size="Size.Small" Class="d-block mt-1">Active</MudChip>
+                                    </MudPaper>
+                                </MudItem>
+                                <MudItem xs="12" sm="6">
+                                    <MudPaper Class="pa-4" Elevation="0" Outlined="true">
+                                        <MudText Typo="Typo.caption">User ID</MudText>
+                                        <MudText Typo="Typo.body2" Class="mt-1">@currentUser.Id</MudText>
+                                    </MudPaper>
+                                </MudItem>
+                            </MudGrid>
+                        </MudTabPanel>
+
+                        <MudTabPanel Text="My Tasks" Icon="@Icons.Material.Filled.Task">
+                            <MudText Typo="Typo.h6" Class="mb-4">Recent Tasks</MudText>
+                            @if (myTasks.Any())
+                            {
+                                <MudList T="string">
+                                    @foreach (var task in myTasks.Take(5))
+                                    {
+                                        <MudListItem T="string" OnClick="@(() => Navigation.NavigateTo($"/tasks/{task.Id}"))">
+                                            <div class="d-flex justify-space-between align-center">
+                                                <MudText>@task.Title</MudText>
+                                                <MudChip T="string" Size="Size.Small" Color="@GetPriorityColor(task.Priority)">@task.PriorityName</MudChip>
+                                            </div>
+                                        </MudListItem>
+                                    }
+                                </MudList>
+                            }
+                            else
+                            {
+                                <MudText>No active tasks found.</MudText>
+                            }
+                        </MudTabPanel>
+
+                        <MudTabPanel Text="Settings" Icon="@Icons.Material.Filled.Settings">
+                            <MudText Typo="Typo.subtitle1">Notifications</MudText>
+                            <MudSwitch T="bool" @bind-Checked="settings.EmailNotifications" Color="Color.Primary" Label="Email" />
+                            <MudSwitch T="bool" @bind-Checked="settings.PushNotifications" Color="Color.Primary" Label="Push" />
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" OnClick="SaveSettings">Save Settings</MudButton>
+                        </MudTabPanel>
+                    </MudTabs>
+                </MudPaper>
+            }
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    private UserDto? currentUser;
+    private UpdateUserDto editModel = new();
+    private List<TaskDto> myTasks = new();
+    private bool isLoading = true;
+    private bool isEditMode = false;
+    private bool isSaving = false;
+    private UserStats stats = new();
+    private UserSettings settings = new();
+
+    protected override async Task OnInitializedAsync() => await LoadProfile();
+
+    private async Task LoadProfile()
+    {
+        try
+        {
+            isLoading = true;
+            currentUser = await AuthService.GetCurrentUserAsync();
+
+            if (currentUser != null)
+            {
+                ResetEditModel();
+                var boards = await BoardService.GetMyBoardsAsync();
+                myTasks = await TaskService.GetMyTasksAsync();
+
+                stats.BoardsCount = boards?.Count ?? 0;
+                stats.ActiveTasksCount = myTasks?.Count ?? 0;
+                stats.CompletedCount = 0; 
+                int total = stats.ActiveTasksCount + stats.CompletedCount;
+                stats.CompletionRate = total > 0 ? (stats.CompletedCount * 100 / total) : 0;
+            }
+        }
+        catch (Exception )
+        {
+            Snackbar.Add("Error loading profile data", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SaveProfile()
+    {
+        isSaving = true;
+        try
+        {
+            var updated = await UserService.UpdateUserAsync(currentUser!.Id, editModel);
+            if (updated != null)
+            {
+                currentUser = updated;
+                isEditMode = false;
+                Snackbar.Add("Profile updated! ", Severity.Success);
+            }
+        }
+        catch { Snackbar.Add("Update failed", Severity.Error); }
+        finally { isSaving = false; }
+    }
+
+    private void ResetEditModel()
+    {
+        if (currentUser == null) return;
+        editModel = new UpdateUserDto { FirstName = currentUser.FirstName, LastName = currentUser.LastName, AvatarUrl = currentUser.AvatarUrl };
+    }
+
+    private void CancelEdit() { isEditMode = false; ResetEditModel(); }
+    private void OpenChangePassword() => Snackbar.Add("Feature coming soon! ", Severity.Info);
+    private void SaveSettings() => Snackbar.Add("Settings saved! ", Severity.Success);
+    private Color GetRoleColor(string role) => role == "Admin" ? Color.Error : role == "User" ? Color.Success : Color.Default;
+    private Color GetPriorityColor(int p) => p switch { 4 => Color.Error, 3 => Color.Warning, 2 => Color.Info, _ => Color.Success };
+    private Color GetDueDateColor(DateTime d) => (d - DateTime.UtcNow).Days < 0 ? Color.Error : Color.Default;
+
+    private class UserStats
+    {
+        public int BoardsCount { get; set; }
+        public int ActiveTasksCount { get; set; }
+        public int CompletedCount { get; set; }
+        public int CompletionRate { get; set; }
+    }
+
+    private class UserSettings
+    {
+        public bool EmailNotifications { get; set; } = true;
+        public bool PushNotifications { get; set; } = true;
+        public bool DarkMode { get; set; }
+        public bool CompactView { get; set; }
+    }
+} *@
