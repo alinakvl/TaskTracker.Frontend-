@@ -1,0 +1,28 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using TaskTracker.Blazor.Services.Abstraction
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+
+<AuthorizeView>
+    <Authorized>
+        <MudText Class="mr-4">Hello, <b>@context.User.Identity?.Name</b></MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="Logout">Logout</MudButton>
+    </Authorized>
+    <NotAuthorized>
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/login">Login</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/register">Register</MudButton>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        if (AuthStateProvider is TaskTracker.Blazor.WebApp.Authentication.CustomAuthStateProvider customProvider)
+        {
+            customProvider.NotifyAuthenticationStateChanged();
+        }
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+}
