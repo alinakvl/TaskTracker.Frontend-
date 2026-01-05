@@ -15,38 +15,31 @@ public class CommentService : ICommentService
 
     public async Task<List<CommentDto>> GetCommentsByTaskAsync(Guid taskId)
     {
-        try
+        var response = await _commentApi.GetCommentsByTaskAsync(taskId);
+
+        if (response.IsSuccessStatusCode && response.Content != null)
         {
-            return await _commentApi.GetCommentsByTaskAsync(taskId);
+            return response.Content;
         }
-        catch
-        {
-            return new List<CommentDto>();
-        }
+
+        return new List<CommentDto>();
     }
 
     public async Task<CommentDto?> CreateCommentAsync(CreateCommentDto createCommentDto)
     {
-        try
+        var response = await _commentApi.CreateCommentAsync(createCommentDto);
+
+        if (response.IsSuccessStatusCode)
         {
-            return await _commentApi.CreateCommentAsync(createCommentDto);
+            return response.Content;
         }
-        catch
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public async Task<bool> DeleteCommentAsync(Guid id)
     {
-        try
-        {
-            await _commentApi.DeleteCommentAsync(id);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        var response = await _commentApi.DeleteCommentAsync(id);
+        return response.IsSuccessStatusCode;
     }
 }

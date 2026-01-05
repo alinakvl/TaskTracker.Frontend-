@@ -15,82 +15,56 @@ public class UserService : IUserService
 
     public async Task<List<UserDto>> GetAllUsersAsync()
     {
-        try
+        var response = await _userApi.GetAllUsersAsync();
+
+        if (response.IsSuccessStatusCode && response.Content != null)
         {
-            return await _userApi.GetAllUsersAsync();
+            return response.Content;
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting users: {ex.Message}");
-            return new List<UserDto>();
-        }
+
+        return new List<UserDto>();
     }
 
     public async Task<UserDto?> GetUserByIdAsync(Guid id)
     {
-        try
+        var response = await _userApi.GetUserByIdAsync(id);
+
+        if (response.IsSuccessStatusCode)
         {
-            return await _userApi.GetUserByIdAsync(id);
+            return response.Content;
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting user: {ex.Message}");
-            return null;
-        }
+
+        return null;
     }
 
     public async Task<UserDto?> GetUserByEmailAsync(string email)
     {
-        try
-        {
-            var users = await GetAllUsersAsync();
-            return users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error getting user by email: {ex.Message}");
-            return null;
-        }
+        var users = await GetAllUsersAsync();
+
+        return users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<UserDto?> UpdateUserAsync(Guid id, UpdateUserDto updateUserDto)
     {
-        try
+        var response = await _userApi.UpdateUserAsync(id, updateUserDto);
+
+        if (response.IsSuccessStatusCode)
         {
-            return await _userApi.UpdateUserAsync(id, updateUserDto);
+            return response.Content;
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error updating user: {ex.Message}");
-            return null;
-        }
+
+        return null;
     }
 
     public async Task<bool> DeleteUserAsync(Guid id)
     {
-        try
-        {
-            await _userApi.DeleteUserAsync(id);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error deleting user: {ex.Message}");
-            return false;
-        }
+        var response = await _userApi.DeleteUserAsync(id);
+        return response.IsSuccessStatusCode;
     }
 
     public async Task<bool> ChangeUserRoleAsync(Guid userId, ChangeRoleDto roleDto)
     {
-        try
-        {
-            await _userApi.ChangeUserRoleAsync(userId, roleDto);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error changing user role: {ex.Message}");
-            return false;
-        }
+        var response = await _userApi.ChangeUserRoleAsync(userId, roleDto);
+        return response.IsSuccessStatusCode;
     }
 }

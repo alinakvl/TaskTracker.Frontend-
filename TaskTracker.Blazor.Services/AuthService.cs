@@ -22,60 +22,43 @@ public class AuthService : IAuthService
 
     public async Task<bool> LoginAsync(LoginDto loginDto)
     {
-        try
+        var response = await _authApi.LoginAsync(loginDto);
+
+        if (response.IsSuccessStatusCode && response.Content != null)
         {
-            var response = await _authApi.LoginAsync(loginDto);
-
-            if (!string.IsNullOrEmpty(response.Token))
-            {
-                await _localStorage.SetItemAsync(AppConstants.AuthTokenKey, response.Token);
-
-                var user = ParseUserFromToken(response.Token);
-                if (user != null)
-                {
-                    await _localStorage.SetItemAsync(AppConstants.UserKey, user);
-                    _currentUser = user;
-                }
-
-                return true;
-            }
-
-            return false;
+            return await HandleAuthResponse(response.Content);
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Login error: {ex.Message}");
-            return false;
-        }
+
+        return false;
     }
 
     public async Task<bool> RegisterAsync(RegisterDto registerDto)
     {
-        try
+        var response = await _authApi.RegisterAsync(registerDto);
+
+        if (response.IsSuccessStatusCode && response.Content != null)
         {
-            var response = await _authApi.RegisterAsync(registerDto);
-
-            if (!string.IsNullOrEmpty(response.Token))
-            {
-                await _localStorage.SetItemAsync(AppConstants.AuthTokenKey, response.Token);
-
-                var user = ParseUserFromToken(response.Token);
-                if (user != null)
-                {
-                    await _localStorage.SetItemAsync(AppConstants.UserKey, user);
-                    _currentUser = user;
-                }
-
-                return true;
-            }
-
-            return false;
+            return await HandleAuthResponse(response.Content);
         }
-        catch (Exception ex)
+
+        return false;
+    }
+
+    private async Task<bool> HandleAuthResponse(AuthResponseDto response)
+    {
+        if (string.IsNullOrEmpty(response.Token))
+            return false;
+
+        await _localStorage.SetItemAsync(AppConstants.AuthTokenKey, response.Token);
+
+        var user = ParseUserFromToken(response.Token);
+        if (user != null)
         {
-            Console.WriteLine($"Registration error: {ex.Message}");
-            return false;
+            await _localStorage.SetItemAsync(AppConstants.UserKey, user);
+            _currentUser = user;
         }
+
+        return true;
     }
 
     public async Task LogoutAsync()
@@ -95,15 +78,8 @@ public class AuthService : IAuthService
         if (_currentUser != null)
             return _currentUser;
 
-        try
-        {
-            _currentUser = await _localStorage.GetItemAsync<UserDto>(AppConstants.UserKey);
-            return _currentUser;
-        }
-        catch
-        {
-            return null;
-        }
+        _currentUser = await _localStorage.GetItemAsync<UserDto>(AppConstants.UserKey);
+        return _currentUser;
     }
 
     public async Task<bool> IsAuthenticatedAsync()
@@ -117,11 +93,12 @@ public class AuthService : IAuthService
         try
         {
             var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
+            if (!handler.CanReadToken(token)) return null;
 
-            var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "userId" || c.Type == "sub")?.Value;
-            var email = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            var role = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            var jwtToken = handler.ReadJwtToken(token);
+            var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "userId" || c.Type == "sub" || c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var email = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email || c.Type == "email")?.Value;
+            var role = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role || c.Type == "role")?.Value;
             var firstName = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value;
             var lastName = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;
 
@@ -137,9 +114,8 @@ public class AuthService : IAuthService
                 Role = role ?? AppConstants.Roles.User
             };
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"Token parsing error: {ex.Message}");
             return null;
         }
     }

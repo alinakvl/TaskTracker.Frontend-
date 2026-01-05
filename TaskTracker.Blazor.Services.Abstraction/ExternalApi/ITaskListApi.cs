@@ -1,23 +1,22 @@
 ﻿using Refit;
 using TaskTracker.Blazor.Domain.DTOs.TaskLists;
 
+namespace TaskTracker.Blazor.Services.Abstraction.ExternalApi;
 
 public interface ITaskListApi
 {
     [Get("/tasklists/board/{boardId}")]
-    Task<List<TaskListDto>> GetTaskListsByBoardIdAsync(Guid boardId);
+    Task<IApiResponse<List<TaskListDto>>> GetTaskListsByBoardIdAsync(Guid boardId);
 
     [Get("/tasklists/{id}")]
-    Task<TaskListDto> GetTaskListByIdAsync(Guid id);
+    Task<IApiResponse<TaskListDto>> GetTaskListByIdAsync(Guid id);
 
     [Post("/tasklists")]
-    Task<TaskListDto> CreateTaskListAsync([Body] CreateTaskListDto createTaskListDto);
+    Task<IApiResponse<TaskListDto>> CreateTaskListAsync([Body] CreateTaskListDto createTaskListDto);
 
     [Put("/tasklists/{id}")]
-    Task<TaskListDto> UpdateTaskListAsync(Guid id, [Body] UpdateTaskListDto updateTaskListDto);
+    Task<IApiResponse<TaskListDto>> UpdateTaskListAsync(Guid id, [Body] UpdateTaskListDto updateTaskListDto);
 
     [Delete("/tasklists/{id}")]
-    Task DeleteTaskListAsync(Guid id);
-
-
+    Task<IApiResponse> DeleteTaskListAsync(Guid id);
 }

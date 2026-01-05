@@ -6,8 +6,8 @@ namespace TaskTracker.Blazor.Services.Abstraction.ExternalApi;
 public interface IAuthApi
 {
     [Post("/auth/login")]
-    Task<AuthResponseDto> LoginAsync([Body] LoginDto loginDto);
+    Task<IApiResponse<AuthResponseDto>> LoginAsync([Body] LoginDto loginDto);
 
     [Post("/auth/register")]
-    Task<AuthResponseDto> RegisterAsync([Body] RegisterDto registerDto);
+    Task<IApiResponse<AuthResponseDto>> RegisterAsync([Body] RegisterDto registerDto);
 }

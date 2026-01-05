@@ -6,17 +6,17 @@ namespace TaskTracker.Blazor.Services.Abstraction.ExternalApi;
 public interface IUserApi
 {
     [Get("/users/{id}")]
-    Task<UserDto> GetUserByIdAsync(Guid id);
+    Task<IApiResponse<UserDto>> GetUserByIdAsync(Guid id);
 
     [Get("/users")]
-    Task<List<UserDto>> GetAllUsersAsync();
+    Task<IApiResponse<List<UserDto>>> GetAllUsersAsync();
 
     [Put("/users/{id}")]
-    Task<UserDto> UpdateUserAsync(Guid id, [Body] UpdateUserDto updateUserDto);
+    Task<IApiResponse<UserDto>> UpdateUserAsync(Guid id, [Body] UpdateUserDto updateUserDto);
 
     [Delete("/users/{id}")]
-    Task DeleteUserAsync(Guid id);
+    Task<IApiResponse> DeleteUserAsync(Guid id);
 
     [Patch("/users/{userId}/role")]
-    Task ChangeUserRoleAsync(Guid userId, [Body] ChangeRoleDto roleDto);
+    Task<IApiResponse> ChangeUserRoleAsync(Guid userId, [Body] ChangeRoleDto roleDto);
 }

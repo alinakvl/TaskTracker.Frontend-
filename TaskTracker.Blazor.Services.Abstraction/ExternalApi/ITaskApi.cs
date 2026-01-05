@@ -6,20 +6,20 @@ namespace TaskTracker.Blazor.Services.Abstraction.ExternalApi;
 public interface ITaskApi
 {
     [Get("/tasks/{id}")]
-    Task<TaskDetailDto> GetTaskByIdAsync(Guid id);
+    Task<IApiResponse<TaskDetailDto>> GetTaskByIdAsync(Guid id);
 
     [Get("/tasks/list/{listId}")]
-    Task<List<TaskDto>> GetTasksByListAsync(Guid listId);
+    Task<IApiResponse<List<TaskDto>>> GetTasksByListAsync(Guid listId);
 
     [Get("/tasks/my")]
-    Task<List<TaskDto>> GetMyTasksAsync();
+    Task<IApiResponse<List<TaskDto>>> GetMyTasksAsync();
 
     [Post("/tasks")]
-    Task<TaskDto> CreateTaskAsync([Body] CreateTaskDto createTaskDto);
+    Task<IApiResponse<TaskDto>> CreateTaskAsync([Body] CreateTaskDto createTaskDto);
 
     [Put("/tasks/{id}")]
-    Task<TaskDto> UpdateTaskAsync(Guid id, [Body] UpdateTaskDto updateTaskDto);
+    Task<IApiResponse<TaskDto>> UpdateTaskAsync(Guid id, [Body] UpdateTaskDto updateTaskDto);
 
     [Delete("/tasks/{id}")]
-    Task DeleteTaskAsync(Guid id);
+    Task<IApiResponse> DeleteTaskAsync(Guid id);
 }

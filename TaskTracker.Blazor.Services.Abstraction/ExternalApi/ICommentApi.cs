@@ -6,11 +6,11 @@ namespace TaskTracker.Blazor.Services.Abstraction.ExternalApi;
 public interface ICommentApi
 {
     [Get("/comments/task/{taskId}")]
-    Task<List<CommentDto>> GetCommentsByTaskAsync(Guid taskId);
+    Task<IApiResponse<List<CommentDto>>> GetCommentsByTaskAsync(Guid taskId);
 
     [Post("/comments")]
-    Task<CommentDto> CreateCommentAsync([Body] CreateCommentDto createCommentDto);
+    Task<IApiResponse<CommentDto>> CreateCommentAsync([Body] CreateCommentDto createCommentDto);
 
     [Delete("/comments/{id}")]
-    Task DeleteCommentAsync(Guid id);
+    Task<IApiResponse> DeleteCommentAsync(Guid id);
 }

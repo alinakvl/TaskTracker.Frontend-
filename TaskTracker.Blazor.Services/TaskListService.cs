@@ -1,5 +1,6 @@
 ﻿using TaskTracker.Blazor.Domain.DTOs.TaskLists;
 using TaskTracker.Blazor.Services.Abstraction;
+using TaskTracker.Blazor.Services.Abstraction.ExternalApi;
 
 namespace TaskTracker.Blazor.Services;
 
@@ -14,64 +15,55 @@ public class TaskListService : ITaskListService
 
     public async Task<List<TaskListDto>> GetTaskListsByBoardIdAsync(Guid boardId)
     {
-        try
+        var response = await _taskListApi.GetTaskListsByBoardIdAsync(boardId);
+
+        if (response.IsSuccessStatusCode && response.Content != null)
         {
-            return await _taskListApi.GetTaskListsByBoardIdAsync(boardId);
+            return response.Content;
         }
-        catch
-        {
-            return new List<TaskListDto>();
-        }
+
+        return new List<TaskListDto>();
     }
 
     public async Task<TaskListDto?> GetTaskListByIdAsync(Guid id)
     {
-        try
+        var response = await _taskListApi.GetTaskListByIdAsync(id);
+
+        if (response.IsSuccessStatusCode)
         {
-            return await _taskListApi.GetTaskListByIdAsync(id);
+            return response.Content;
         }
-        catch
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public async Task<TaskListDto?> CreateTaskListAsync(CreateTaskListDto createTaskListDto)
     {
-        try
+        var response = await _taskListApi.CreateTaskListAsync(createTaskListDto);
+
+        if (response.IsSuccessStatusCode)
         {
-            return await _taskListApi.CreateTaskListAsync(createTaskListDto);
+            return response.Content;
         }
-        catch
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public async Task<TaskListDto?> UpdateTaskListAsync(Guid id, UpdateTaskListDto updateTaskListDto)
     {
-        try
+        var response = await _taskListApi.UpdateTaskListAsync(id, updateTaskListDto);
+
+        if (response.IsSuccessStatusCode)
         {
-            return await _taskListApi.UpdateTaskListAsync(id, updateTaskListDto);
+            return response.Content;
         }
-        catch
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public async Task<bool> DeleteTaskListAsync(Guid id)
     {
-        try
-        {
-            await _taskListApi.DeleteTaskListAsync(id);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        var response = await _taskListApi.DeleteTaskListAsync(id);
+        return response.IsSuccessStatusCode;
     }
-
- 
 }

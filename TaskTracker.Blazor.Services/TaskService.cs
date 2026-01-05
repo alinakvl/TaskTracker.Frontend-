@@ -15,74 +15,67 @@ public class TaskService : ITaskService
 
     public async Task<TaskDetailDto?> GetTaskByIdAsync(Guid id)
     {
-        try
+        var response = await _taskApi.GetTaskByIdAsync(id);
+
+        if (response.IsSuccessStatusCode)
         {
-            return await _taskApi.GetTaskByIdAsync(id);
+            return response.Content;
         }
-        catch
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public async Task<List<TaskDto>> GetTasksByListAsync(Guid listId)
     {
-        try
+        var response = await _taskApi.GetTasksByListAsync(listId);
+
+        if (response.IsSuccessStatusCode && response.Content != null)
         {
-            return await _taskApi.GetTasksByListAsync(listId);
+            return response.Content;
         }
-        catch
-        {
-            return new List<TaskDto>();
-        }
+
+        return new List<TaskDto>();
     }
 
     public async Task<List<TaskDto>> GetMyTasksAsync()
     {
-        try
+        var response = await _taskApi.GetMyTasksAsync();
+
+        if (response.IsSuccessStatusCode && response.Content != null)
         {
-            return await _taskApi.GetMyTasksAsync();
+            return response.Content;
         }
-        catch
-        {
-            return new List<TaskDto>();
-        }
+
+        return new List<TaskDto>();
     }
 
     public async Task<TaskDto?> CreateTaskAsync(CreateTaskDto createTaskDto)
     {
-        try
+        var response = await _taskApi.CreateTaskAsync(createTaskDto);
+
+        if (response.IsSuccessStatusCode)
         {
-            return await _taskApi.CreateTaskAsync(createTaskDto);
+            return response.Content;
         }
-        catch
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public async Task<TaskDto?> UpdateTaskAsync(Guid id, UpdateTaskDto updateTaskDto)
     {
-        try
+        var response = await _taskApi.UpdateTaskAsync(id, updateTaskDto);
+
+        if (response.IsSuccessStatusCode)
         {
-            return await _taskApi.UpdateTaskAsync(id, updateTaskDto);
+            return response.Content;
         }
-        catch
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public async Task<bool> DeleteTaskAsync(Guid id)
     {
-        try
-        {
-            await _taskApi.DeleteTaskAsync(id);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        var response = await _taskApi.DeleteTaskAsync(id);
+        return response.IsSuccessStatusCode;
     }
 }

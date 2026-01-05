@@ -15,124 +15,97 @@ public class BoardService : IBoardService
 
     public async Task<List<BoardDto>> GetMyBoardsAsync()
     {
-        try
+        var response = await _boardApi.GetMyBoardsAsync();
+
+        if (response.IsSuccessStatusCode && response.Content != null)
         {
-            return await _boardApi.GetMyBoardsAsync();
+            return response.Content;
         }
-        catch
-        {
-            return new List<BoardDto>();
-        }
+
+        return new List<BoardDto>();
     }
 
     public async Task<BoardDetailDto?> GetBoardByIdAsync(Guid id)
     {
-        try
+        var response = await _boardApi.GetBoardByIdAsync(id);
+
+        if (response.IsSuccessStatusCode)
         {
-            return await _boardApi.GetBoardByIdAsync(id);
+            return response.Content;
         }
-        catch
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public async Task<List<BoardDto>> GetArchivedBoardsAsync()
     {
-        try
+        var response = await _boardApi.GetArchivedBoardsAsync();
+
+        if (response.IsSuccessStatusCode && response.Content != null)
         {
-            return await _boardApi.GetArchivedBoardsAsync();
+            return response.Content;
         }
-        catch
-        {
-            return new List<BoardDto>();
-        }
+
+        return new List<BoardDto>();
     }
 
     public async Task<BoardDto?> CreateBoardAsync(CreateBoardDto createBoardDto)
     {
-        try
+        var response = await _boardApi.CreateBoardAsync(createBoardDto);
+
+        if (response.IsSuccessStatusCode)
         {
-            return await _boardApi.CreateBoardAsync(createBoardDto);
+            return response.Content;
         }
-        catch
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public async Task<BoardDto?> UpdateBoardAsync(Guid id, UpdateBoardDto updateBoardDto)
     {
-        try
+        var response = await _boardApi.UpdateBoardAsync(id, updateBoardDto);
+
+        if (response.IsSuccessStatusCode)
         {
-            return await _boardApi.UpdateBoardAsync(id, updateBoardDto);
+            return response.Content;
         }
-        catch
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public async Task<bool> DeleteBoardAsync(Guid id)
     {
-        try
-        {
-            await _boardApi.DeleteBoardAsync(id);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        var response = await _boardApi.DeleteBoardAsync(id);
+        return response.IsSuccessStatusCode;
     }
 
     public async Task<bool> ArchiveBoardAsync(Guid id)
     {
-        try
-        {
-            await _boardApi.ArchiveBoardAsync(id);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        var response = await _boardApi.ArchiveBoardAsync(id);
+        return response.IsSuccessStatusCode;
     }
+
     public async Task<List<BoardMemberDto>> GetBoardMembersAsync(Guid boardId)
     {
-        try
+        var response = await _boardApi.GetBoardMembersAsync(boardId);
+
+        if (response.IsSuccessStatusCode && response.Content != null)
         {
-            return await _boardApi.GetBoardMembersAsync(boardId);
+            return response.Content;
         }
-        catch
-        {
-            return new List<BoardMemberDto>();
-        }
+
+        return new List<BoardMemberDto>();
     }
 
     public async Task<bool> AddBoardMemberAsync(Guid boardId, AddBoardMemberDto addMemberDto)
     {
-        try
-        {
-            await _boardApi.AddBoardMemberAsync(boardId, addMemberDto);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        var response = await _boardApi.AddBoardMemberAsync(boardId, addMemberDto);
+        return response.IsSuccessStatusCode;
     }
 
     public async Task<bool> RemoveBoardMemberAsync(Guid boardId, Guid userId)
     {
-        try
-        {
-            await _boardApi.RemoveBoardMemberAsync(boardId, userId);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        var response = await _boardApi.RemoveBoardMemberAsync(boardId, userId);
+        return response.IsSuccessStatusCode;
     }
 }
