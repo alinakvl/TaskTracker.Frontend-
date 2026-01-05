@@ -6,42 +6,56 @@
 @inject ISnackbar Snackbar
 @inject AuthenticationStateProvider AuthStateProvider
 
-<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center" Style="min-height: 100vh;">
-    <MudPaper Elevation="8" Class="pa-8" Style="width: 100%;">
-        <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">
-            <MudIcon Icon="@Icons.Material.Filled.Task" Size="Size.Large" /> TaskTracker
+<MudContainer MaxWidth=@MaxWidth.Small
+              Class="d-flex align-center justify-center"
+              Style="min-height: 100vh;">
+
+    <MudPaper Elevation="8"
+              Class="pa-8"
+              Style="width: 100%;">
+
+        <MudText Typo=@Typo.h4
+                 Align=@Align.Center
+                 GutterBottom=@true>
+            <MudIcon Icon=@Icons.Material.Filled.Task
+                     Size=@Size.Large /> TaskTracker
         </MudText>
-        <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-6">
+
+        <MudText Typo=@Typo.h6
+                 Align=@Align.Center
+                 Class="mb-6">
             Sign in to your account
         </MudText>
 
-        <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+        <EditForm Model=@loginModel
+                  OnValidSubmit=@HandleLogin>
             <DataAnnotationsValidator />
 
-            <MudTextField @bind-Value="loginModel.Email"
+            <MudTextField @bind-Value=@loginModel.Email
                           Label="Email"
-                          Variant="Variant.Outlined"
-                          InputType="InputType.Email"
-                          Required="true"
+                          Variant=@Variant.Outlined
+                          InputType=@InputType.Email
+                          Required=@true
                           Class="mb-4" />
 
-            <MudTextField @bind-Value="loginModel.Password"
+            <MudTextField @bind-Value=@loginModel.Password
                           Label="Password"
-                          Variant="Variant.Outlined"
-                          InputType="InputType.Password"
-                          Required="true"
+                          Variant=@Variant.Outlined
+                          InputType=@InputType.Password
+                          Required=@true
                           Class="mb-4" />
 
-            <MudButton ButtonType="ButtonType.Submit"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       FullWidth="true"
-                       Size="Size.Large"
-                       Disabled="@isLoading"
+            <MudButton ButtonType=@ButtonType.Submit
+                       Variant=@Variant.Filled
+                       Color=@Color.Primary
+                       FullWidth=@true
+                       Size=@Size.Large
+                       Disabled=@isLoading
                        Class="mb-4">
                 @if (isLoading)
                 {
-                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                    <MudProgressCircular Size=@Size.Small
+                                         Indeterminate=@true />
                 }
                 else
                 {
@@ -49,11 +63,17 @@
                 }
             </MudButton>
         </EditForm>
+
         <MudDivider Class="my-4" />
-        <MudText Align="Align.Center">
+
+        <MudText Align=@Align.Center>
             Don't have an account?
-            <MudLink Href="/register" Color="Color.Primary">Sign up</MudLink>
+            <MudLink Href="/register"
+                     Color=@Color.Primary>
+                Sign up
+            </MudLink>
         </MudText>
+
     </MudPaper>
 </MudContainer>
 

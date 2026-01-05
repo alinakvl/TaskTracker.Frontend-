@@ -13,158 +13,249 @@
 
 @if (isLoading)
 {
-    <MudProgressLinear Indeterminate="true" />
+    <MudProgressLinear Indeterminate=@true />
 }
 else
 {
     <div class="mb-6">
-        <MudText Typo="Typo.h3" Class="mb-2">
-            Welcome back, @currentUser?.FirstName! 
+        <MudText Typo=@Typo.h3
+                 Class="mb-2">
+            Welcome back, @currentUser?.FirstName!
         </MudText>
-        <MudText Typo="Typo.body1" Color="Color.Default">
+
+        <MudText Typo=@Typo.body1
+                 Color=@Color.Default>
             @GetGreetingMessage()
         </MudText>
     </div>
 
     <MudGrid Class="mb-6">
-        <MudItem xs="12" sm="6" md="3">
-            <MudPaper Elevation="2" Class="pa-4 stat-card" Style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <MudItem xs="12"
+                 sm="6"
+                 md="3">
+            <MudPaper Elevation="2"
+                      Class="pa-4 stat-card"
+                      Style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                 <div class="d-flex justify-space-between align-center">
                     <div>
-                        <MudText Typo="Typo.h6" Style="color: rgba(255,255,255,0.9);">My Boards</MudText>
-                        <MudText Typo="Typo.h3" Style="color: white;" Class="mt-2">@boards.Count</MudText>
+                        <MudText Typo=@Typo.h6
+                                 Style="color: rgba(255,255,255,0.9);">
+                            My Boards
+                        </MudText>
+
+                        <MudText Typo=@Typo.h3
+                                 Style="color: white;"
+                                 Class="mt-2">
+                            @boards.Count
+                        </MudText>
                     </div>
-                    <MudIcon Icon="@Icons.Material.Filled.ViewKanban" Size="Size.Large" Style="color: rgba(255,255,255,0.5);" />
+
+                    <MudIcon Icon=@Icons.Material.Filled.ViewKanban
+                             Size=@Size.Large
+                             Style="color: rgba(255,255,255,0.5);" />
                 </div>
-                <MudButton Variant="Variant.Text"
+
+                <MudButton Variant=@Variant.Text
                            Href="/boards"
                            Style="color: white; margin-top: 8px;"
-                           StartIcon="@Icons.Material.Filled.ArrowForward">
+                           StartIcon=@Icons.Material.Filled.ArrowForward>
                     View All
                 </MudButton>
             </MudPaper>
         </MudItem>
 
-        <MudItem xs="12" sm="6" md="3">
-            <MudPaper Elevation="2" Class="pa-4 stat-card" Style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        <MudItem xs="12"
+                 sm="6"
+                 md="3">
+            <MudPaper Elevation="2"
+                      Class="pa-4 stat-card"
+                      Style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                 <div class="d-flex justify-space-between align-center">
                     <div>
-                        <MudText Typo="Typo.h6" Style="color: rgba(255,255,255,0.9);">My Tasks</MudText>
-                        <MudText Typo="Typo.h3" Style="color: white;" Class="mt-2">@myTasks.Count</MudText>
+                        <MudText Typo=@Typo.h6
+                                 Style="color: rgba(255,255,255,0.9);">
+                            My Tasks
+                        </MudText>
+
+                        <MudText Typo=@Typo.h3
+                                 Style="color: white;"
+                                 Class="mt-2">
+                            @myTasks.Count
+                        </MudText>
                     </div>
-                    <MudIcon Icon="@Icons.Material.Filled.Task" Size="Size.Large" Style="color: rgba(255,255,255,0.5);" />
+
+                    <MudIcon Icon=@Icons.Material.Filled.Task
+                             Size=@Size.Large
+                             Style="color: rgba(255,255,255,0.5);" />
                 </div>
-                <MudButton Variant="Variant.Text"
+
+                <MudButton Variant=@Variant.Text
                            Href="/tasks"
                            Style="color: white; margin-top: 8px;"
-                           StartIcon="@Icons.Material.Filled.ArrowForward">
+                           StartIcon=@Icons.Material.Filled.ArrowForward>
                     View All
                 </MudButton>
             </MudPaper>
         </MudItem>
 
-        <MudItem xs="12" sm="6" md="3">
-            <MudPaper Elevation="2" Class="pa-4 stat-card" Style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <MudItem xs="12"
+                 sm="6"
+                 md="3">
+            <MudPaper Elevation="2"
+                      Class="pa-4 stat-card"
+                      Style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                 <div class="d-flex justify-space-between align-center">
                     <div>
-                        <MudText Typo="Typo.h6" Style="color: rgba(255,255,255,0.9);">Completed</MudText>
-                        <MudText Typo="Typo.h3" Style="color: white;" Class="mt-2">@completedTasksCount</MudText>
+                        <MudText Typo=@Typo.h6
+                                 Style="color: rgba(255,255,255,0.9);">
+                            Completed
+                        </MudText>
+
+                        <MudText Typo=@Typo.h3
+                                 Style="color: white;"
+                                 Class="mt-2">
+                            @completedTasksCount
+                        </MudText>
                     </div>
-                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Large" Style="color: rgba(255,255,255,0.5);" />
+
+                    <MudIcon Icon=@Icons.Material.Filled.CheckCircle
+                             Size=@Size.Large
+                             Style="color: rgba(255,255,255,0.5);" />
                 </div>
-                <MudText Typo="Typo.body2" Style="color: rgba(255,255,255,0.9); margin-top: 8px;">
+
+                <MudText Typo=@Typo.body2
+                         Style="color: rgba(255,255,255,0.9); margin-top: 8px;">
                     This week
                 </MudText>
             </MudPaper>
         </MudItem>
 
-        <MudItem xs="12" sm="6" md="3">
-            <MudPaper Elevation="2" Class="pa-4 stat-card" Style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+        <MudItem xs="12"
+                 sm="6"
+                 md="3">
+            <MudPaper Elevation="2"
+                      Class="pa-4 stat-card"
+                      Style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
                 <div class="d-flex justify-space-between align-center">
                     <div>
-                        <MudText Typo="Typo.h6" Style="color: rgba(255,255,255,0.9);">Overdue</MudText>
-                        <MudText Typo="Typo.h3" Style="color: white;" Class="mt-2">@overdueTasksCount</MudText>
+                        <MudText Typo=@Typo.h6
+                                 Style="color: rgba(255,255,255,0.9);">
+                            Overdue
+                        </MudText>
+
+                        <MudText Typo=@Typo.h3
+                                 Style="color: white;"
+                                 Class="mt-2">
+                            @overdueTasksCount
+                        </MudText>
                     </div>
-                    <MudIcon Icon="@Icons.Material.Filled.Warning" Size="Size.Large" Style="color: rgba(255,255,255,0.5);" />
+
+                    <MudIcon Icon=@Icons.Material.Filled.Warning
+                             Size=@Size.Large
+                             Style="color: rgba(255,255,255,0.5);" />
                 </div>
-                <MudText Typo="Typo.body2" Style="color: rgba(255,255,255,0.9); margin-top: 8px;">
+
+                <MudText Typo=@Typo.body2
+                         Style="color: rgba(255,255,255,0.9); margin-top: 8px;">
                     Needs attention
                 </MudText>
             </MudPaper>
         </MudItem>
     </MudGrid>
 
-    <MudPaper Elevation="2" Class="pa-4 mb-6">
-        <MudText Typo="Typo.h6" Class="mb-3">Quick Actions</MudText>
+    <MudPaper Elevation="2"
+              Class="pa-4 mb-6">
+        <MudText Typo=@Typo.h6
+                 Class="mb-3">
+            Quick Actions
+        </MudText>
+
         <div class="d-flex flex-wrap gap-2">
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       StartIcon="@Icons.Material.Filled.Add"
+            <MudButton Variant=@Variant.Filled
+                       Color=@Color.Primary
+                       StartIcon=@Icons.Material.Filled.Add
                        Href="/boards/create">
                 New Board
             </MudButton>
-            <MudButton Variant="Variant.Outlined"
-                       Color="Color.Primary"
-                       StartIcon="@Icons.Material.Filled.GroupAdd">
+
+            <MudButton Variant=@Variant.Outlined
+                       Color=@Color.Primary
+                       StartIcon=@Icons.Material.Filled.GroupAdd>
                 Invite Team
             </MudButton>
-            <MudButton Variant="Variant.Outlined"
-                       Color="Color.Default"
-                       StartIcon="@Icons.Material.Filled.Search">
+
+            <MudButton Variant=@Variant.Outlined
+                       Color=@Color.Default
+                       StartIcon=@Icons.Material.Filled.Search>
                 Search Tasks
             </MudButton>
         </div>
     </MudPaper>
 
     <MudGrid>
-        <MudItem xs="12" md="8">
-            <MudPaper Elevation="2" Class="pa-4 mb-4">
+        <MudItem xs="12"
+                 md="8">
+            <MudPaper Elevation="2"
+                      Class="pa-4 mb-4">
                 <div class="d-flex justify-space-between align-center mb-4">
-                    <MudText Typo="Typo.h6">My Tasks</MudText>
-                    <MudButton Variant="Variant.Text"
-                               Color="Color.Primary"
+                    <MudText Typo=@Typo.h6>My Tasks</MudText>
+
+                    <MudButton Variant=@Variant.Text
+                               Color=@Color.Primary
                                Href="/tasks"
-                               EndIcon="@Icons.Material.Filled.ArrowForward">
+                               EndIcon=@Icons.Material.Filled.ArrowForward>
                         View All
                     </MudButton>
                 </div>
 
                 @if (myTasks.Any())
                 {
-              
-                    <MudList T="string" Dense="true" Clickable="true">
+                    <MudList T="string"
+                             Dense=@true
+                             Clickable=@true>
                         @foreach (var task in myTasks.Take(5))
                         {
-                           
-                            <MudListItem T="string" OnClick="@(() => Navigation.NavigateTo($"/tasks/{task.Id}"))"
+                            <MudListItem T="string"
+                                         OnClick=@(() => Navigation.NavigateTo($"/tasks/{task.Id}"))
                                          Style="cursor: pointer; border-radius: 8px;">
                                 <div class="d-flex align-center justify-space-between">
-                                    <div class="d-flex align-center gap-3" style="flex: 1;">
-                                        <MudCheckBox T="bool" Value="false" Color="Color.Primary" />
+                                    <div class="d-flex align-center gap-3"
+                                         style="flex: 1;">
+                                        <MudCheckBox T="bool"
+                                                     Value=@false
+                                                     Color=@Color.Primary />
+
                                         <div>
-                                            <MudText Typo="Typo.body1">@task.Title</MudText>
+                                            <MudText Typo=@Typo.body1>
+                                                @task.Title
+                                            </MudText>
+
                                             <div class="d-flex gap-2 align-center mt-1">
-                                              
-                                                <MudChip T="string" Size="Size.Small"
-                                                         Color="@GetPriorityColor(task.Priority)"
-                                                         Variant="Variant.Text">
+                                                <MudChip T="string"
+                                                         Size=@Size.Small
+                                                         Color=@GetPriorityColor(task.Priority)
+                                                         Variant=@Variant.Text>
                                                     @task.PriorityName
                                                 </MudChip>
 
                                                 @if (task.DueDate.HasValue)
                                                 {
-                                                    <MudChip T="string" Size="Size.Small"
-                                                             Icon="@Icons.Material.Filled.CalendarToday"
-                                                             Color="@GetDueDateColor(task.DueDate.Value)">
+                                                    <MudChip T="string"
+                                                             Size=@Size.Small
+                                                             Icon=@Icons.Material.Filled.CalendarToday
+                                                             Color=@GetDueDateColor(task.DueDate.Value)>
                                                         @task.DueDate.Value.ToString("MMM dd")
                                                     </MudChip>
                                                 }
                                             </div>
                                         </div>
                                     </div>
-                                    <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" Size="Size.Small" />
+
+                                    <MudIconButton Icon=@Icons.Material.Filled.ChevronRight
+                                                   Size=@Size.Small />
                                 </div>
                             </MudListItem>
+
                             <MudDivider />
                         }
                     </MudList>
@@ -172,24 +263,28 @@ else
                 else
                 {
                     <div class="text-center py-8">
-                        <MudIcon Icon="@Icons.Material.Filled.TaskAlt"
-                                 Size="Size.Large"
-                                 Color="Color.Default"
+                        <MudIcon Icon=@Icons.Material.Filled.TaskAlt
+                                 Size=@Size.Large
+                                 Color=@Color.Default
                                  Class="mb-2" />
-                        <MudText Typo="Typo.body1" Color="Color.Default">
+
+                        <MudText Typo=@Typo.body1
+                                 Color=@Color.Default>
                             No tasks assigned to you yet
                         </MudText>
                     </div>
                 }
             </MudPaper>
 
-            <MudPaper Elevation="2" Class="pa-4">
+            <MudPaper Elevation="2"
+                      Class="pa-4">
                 <div class="d-flex justify-space-between align-center mb-4">
-                    <MudText Typo="Typo.h6">Recent Boards</MudText>
-                    <MudButton Variant="Variant.Text"
-                               Color="Color.Primary"
+                    <MudText Typo=@Typo.h6>Recent Boards</MudText>
+
+                    <MudButton Variant=@Variant.Text
+                               Color=@Color.Primary
                                Href="/boards"
-                               EndIcon="@Icons.Material.Filled.ArrowForward">
+                               EndIcon=@Icons.Material.Filled.ArrowForward>
                         View All
                     </MudButton>
                 </div>
@@ -199,18 +294,28 @@ else
                     <MudGrid>
                         @foreach (var board in boards.Take(4))
                         {
-                            <MudItem xs="12" sm="6">
+                            <MudItem xs="12"
+                                     sm="6">
                                 <MudCard Elevation="0"
-                                         Outlined="true"
-                                         Style="@($"cursor: pointer; border-left: 4px solid {board.BackgroundColor};")"
-                                         @onclick="@(() => Navigation.NavigateTo($"/boards/{board.Id}"))">
+                                         Outlined=@true
+                                         Style=@($"cursor: pointer; border-left: 4px solid {board.BackgroundColor};")
+                                         @onclick=@(() => Navigation.NavigateTo($"/boards/{board.Id}"))>
                                     <MudCardContent>
-                                        <MudText Typo="Typo.h6" Class="mb-2">@board.Title</MudText>
+                                        <MudText Typo=@Typo.h6
+                                                 Class="mb-2">
+                                            @board.Title
+                                        </MudText>
+
                                         <div class="d-flex gap-2">
-                                            <MudChip T="string" Size="Size.Small" Icon="@Icons.Material.Filled.Task">
+                                            <MudChip T="string"
+                                                     Size=@Size.Small
+                                                     Icon=@Icons.Material.Filled.Task>
                                                 @board.TasksCount Tasks
                                             </MudChip>
-                                            <MudChip T="string" Size="Size.Small" Icon="@Icons.Material.Filled.People">
+
+                                            <MudChip T="string"
+                                                     Size=@Size.Small
+                                                     Icon=@Icons.Material.Filled.People>
                                                 @board.MembersCount
                                             </MudChip>
                                         </div>
@@ -223,16 +328,20 @@ else
                 else
                 {
                     <div class="text-center py-8">
-                        <MudIcon Icon="@Icons.Material.Filled.ViewKanban"
-                                 Size="Size.Large"
-                                 Color="Color.Default"
+                        <MudIcon Icon=@Icons.Material.Filled.ViewKanban
+                                 Size=@Size.Large
+                                 Color=@Color.Default
                                  Class="mb-2" />
-                        <MudText Typo="Typo.body1" Color="Color.Default" Class="mb-3">
+
+                        <MudText Typo=@Typo.body1
+                                 Color=@Color.Default
+                                 Class="mb-3">
                             No boards yet
                         </MudText>
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Add"
+
+                        <MudButton Variant=@Variant.Filled
+                                   Color=@Color.Primary
+                                   StartIcon=@Icons.Material.Filled.Add
                                    Href="/boards/create">
                             Create Your First Board
                         </MudButton>
@@ -241,61 +350,101 @@ else
             </MudPaper>
         </MudItem>
 
-         <MudItem xs="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4 mb-4">
-                <MudText Typo="Typo.h6" Class="mb-3">Recent Activity</MudText>
-                <MudTimeline TimelineOrientation="TimelineOrientation.Vertical" TimelinePosition="TimelinePosition.Start">
-                    <MudTimelineItem Size="Size.Small" Color="Color.Success">
-                        <MudText Typo="Typo.body2"><strong>Board created</strong></MudText>
-                        <MudText Typo="Typo.caption" Color="Color.Default">2 hours ago</MudText>
+        <MudItem xs="12"
+                 md="4">
+            <MudPaper Elevation="2"
+                      Class="pa-4 mb-4">
+                <MudText Typo=@Typo.h6
+                         Class="mb-3">
+                    Recent Activity
+                </MudText>
+
+                <MudTimeline TimelineOrientation=@TimelineOrientation.Vertical
+                             TimelinePosition=@TimelinePosition.Start>
+                    <MudTimelineItem Size=@Size.Small
+                                     Color=@Color.Success>
+                        <MudText Typo=@Typo.body2>
+                            <strong>Board created</strong>
+                        </MudText>
+                        <MudText Typo=@Typo.caption
+                                 Color=@Color.Default>
+                            2 hours ago
+                        </MudText>
                     </MudTimelineItem>
-                    <MudTimelineItem Size="Size.Small" Color="Color.Info">
-                        <MudText Typo="Typo.body2"><strong>Task completed</strong></MudText>
-                        <MudText Typo="Typo.caption" Color="Color.Default">5 hours ago</MudText>
+
+                    <MudTimelineItem Size=@Size.Small
+                                     Color=@Color.Info>
+                        <MudText Typo=@Typo.body2>
+                            <strong>Task completed</strong>
+                        </MudText>
+                        <MudText Typo=@Typo.caption
+                                 Color=@Color.Default>
+                            5 hours ago
+                        </MudText>
                     </MudTimelineItem>
                 </MudTimeline>
-            </MudPaper> 
-       
+            </MudPaper>
 
-            <MudPaper Elevation="2" Class="pa-4 mb-4">
-                <MudText Typo="Typo.h6" Class="mb-3">Task Priority</MudText>
+            <MudPaper Elevation="2"
+                      Class="pa-4 mb-4">
+                <MudText Typo=@Typo.h6
+                         Class="mb-3">
+                    Task Priority
+                </MudText>
+
                 <div class="priority-bars">
                     <div class="mb-3">
                         <div class="d-flex justify-space-between mb-1">
-                            <MudText Typo="Typo.body2">Critical</MudText>
-                            <MudText Typo="Typo.body2">@GetTaskCountByPriority(4)</MudText>
+                            <MudText Typo=@Typo.body2>Critical</MudText>
+                            <MudText Typo=@Typo.body2>@GetTaskCountByPriority(4)</MudText>
                         </div>
-                        <MudProgressLinear Color="Color.Error"
-                                           Value="@GetTaskPercentageByPriority(4)"
-                                           Size="Size.Large"
-                                           Rounded="true" />
+
+                        <MudProgressLinear Color=@Color.Error
+                                           Value=@GetTaskPercentageByPriority(4)
+                                           Size=@Size.Large
+                                           Rounded=@true />
                     </div>
                 </div>
             </MudPaper>
 
-            <MudPaper Elevation="2" Class="pa-4">
-                <MudText Typo="Typo.h6" Class="mb-3">Upcoming Deadlines</MudText>
+            <MudPaper Elevation="2"
+                      Class="pa-4">
+                <MudText Typo=@Typo.h6
+                         Class="mb-3">
+                    Upcoming Deadlines
+                </MudText>
+
                 @if (upcomingTasks.Any())
                 {
-                    <MudList T="string" Dense="true">
+                    <MudList T="string"
+                             Dense=@true>
                         @foreach (var task in upcomingTasks.Take(5))
                         {
-                            <MudListItem T="string" OnClick="@(() => Navigation.NavigateTo($"/tasks/{task.Id}"))"
+                            <MudListItem T="string"
+                                         OnClick=@(() => Navigation.NavigateTo($"/tasks/{task.Id}"))
                                          Style="cursor: pointer;">
                                 <div>
-                                    <MudText Typo="Typo.body2">@task.Title</MudText>
-                                    <MudText Typo="Typo.caption" Color="@GetDueDateTextColor(task.DueDate!.Value)">
+                                    <MudText Typo=@Typo.body2>
+                                        @task.Title
+                                    </MudText>
+
+                                    <MudText Typo=@Typo.caption
+                                             Color=@GetDueDateTextColor(task.DueDate!.Value)>
                                         @GetDueDateText(task.DueDate!.Value)
                                     </MudText>
                                 </div>
                             </MudListItem>
+
                             <MudDivider />
                         }
                     </MudList>
                 }
                 else
                 {
-                    <MudText Typo="Typo.body2" Color="Color.Default" Align="Align.Center" Class="py-4">
+                    <MudText Typo=@Typo.body2
+                             Color=@Color.Default
+                             Align=@Align.Center
+                             Class="py-4">
                         No upcoming deadlines
                     </MudText>
                 }

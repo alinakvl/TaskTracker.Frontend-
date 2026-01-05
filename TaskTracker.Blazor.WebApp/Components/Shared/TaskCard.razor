@@ -4,16 +4,21 @@
 
 <MudPaper Class="task-card pa-3 mb-2"
           Elevation="1"
-          @onclick="@(() => Navigation.NavigateTo($"/tasks/{Task.Id}"))">
+          @onclick=@(() => Navigation.NavigateTo($"/tasks/{Task.Id}"))>
 
-    <MudText Typo="Typo.body1" Class="mb-2" Style="font-weight: 500;">@Task.Title</MudText>
+    <MudText Typo=@Typo.body1
+             Class="mb-2"
+             Style="font-weight: 500;">
+        @Task.Title
+    </MudText>
 
     <div class="d-flex align-center gap-2 flex-wrap">
         @if (Task.Priority >= 3)
         {
-            <MudChip T="string" Size="Size.Small"
-                     Color="@GetPriorityColor(Task.Priority)"
-                     Variant="Variant.Text"
+            <MudChip T="string"
+                     Size=@Size.Small
+                     Color=@GetPriorityColor(Task.Priority)
+                     Variant=@Variant.Text
                      Class="ma-0">
                 @Task.PriorityName
             </MudChip>
@@ -21,9 +26,10 @@
 
         @if (Task.DueDate.HasValue)
         {
-            <MudChip T="string" Size="Size.Small"
-                     Icon="@Icons.Material.Filled.CalendarToday"
-                     Color="@GetDueDateColor(Task.DueDate.Value)"
+            <MudChip T="string"
+                     Size=@Size.Small
+                     Icon=@Icons.Material.Filled.CalendarToday
+                     Color=@GetDueDateColor(Task.DueDate.Value)
                      Class="ma-0">
                 @Task.DueDate.Value.ToString("MMM dd")
             </MudChip>
@@ -31,9 +37,10 @@
 
         @if (Task.CommentsCount > 0)
         {
-            <MudChip T="string" Size="Size.Small"
-                     Icon="@Icons.Material.Filled.Comment"
-                     Variant="Variant.Text"
+            <MudChip T="string"
+                     Size=@Size.Small
+                     Icon=@Icons.Material.Filled.Comment
+                     Variant=@Variant.Text
                      Class="ma-0">
                 @Task.CommentsCount
             </MudChip>
@@ -41,10 +48,10 @@
 
         @if (Task.AttachmentsCount > 0)
         {
-           
-            <MudChip T="string" Size="Size.Small"
-                     Icon="@Icons.Material.Filled.AttachFile"
-                     Variant="Variant.Text"
+            <MudChip T="string"
+                     Size=@Size.Small
+                     Icon=@Icons.Material.Filled.AttachFile
+                     Variant=@Variant.Text
                      Class="ma-0">
                 @Task.AttachmentsCount
             </MudChip>
@@ -56,10 +63,10 @@
         <div class="d-flex gap-1 mt-2 flex-wrap">
             @foreach (var label in Task.Labels.Take(3))
             {
-               
-                <MudChip T="string" Size="Size.Small"
-                         Style="@($"background-color: {label.Color}; color: white;")"
-                         Variant="Variant.Filled"
+                <MudChip T="string"
+                         Size=@Size.Small
+                         Style=@($"background-color: {label.Color}; color: white;")
+                         Variant=@Variant.Filled
                          Class="ma-0">
                     @label.Name
                 </MudChip>
@@ -70,11 +77,14 @@
     @if (!string.IsNullOrEmpty(Task.AssignedUserName))
     {
         <div class="mt-2 d-flex justify-end">
-            <MudAvatar Size="Size.Small" Color="Color.Primary" Style="font-size: 12px;">
+            <MudAvatar Size=@Size.Small
+                       Color=@Color.Primary
+                       Style="font-size: 12px;">
                 @Task.AssignedUserName.Substring(0, 1).ToUpper()
             </MudAvatar>
         </div>
     }
+
 </MudPaper>
 
 <style>

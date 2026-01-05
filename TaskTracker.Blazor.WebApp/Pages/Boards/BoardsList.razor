@@ -7,26 +7,31 @@
 <PageTitle>My Boards - TaskTracker</PageTitle>
 
 <div class="d-flex justify-space-between align-center mb-4">
-    <MudText Typo="Typo.h4">My Boards</MudText>
-    <MudButton Variant="Variant.Filled" 
-               Color="Color.Primary" 
-               StartIcon="@Icons.Material.Filled.Add"
-               OnClick="@(() => showCreateDialog = true)">
+    <MudText Typo=@Typo.h4>My Boards</MudText>
+
+    <MudButton Variant=@Variant.Filled
+               Color=@Color.Primary
+               StartIcon=@Icons.Material.Filled.Add
+               OnClick=@(() => showCreateDialog = true)>
         Create Board
     </MudButton>
 </div>
 
 @if (isLoading)
 {
-    <MudProgressLinear Indeterminate="true" />
+    <MudProgressLinear Indeterminate=@true />
 }
 else if (boards.Any())
 {
     <MudGrid>
         @foreach (var board in boards)
         {
-            <MudItem xs="12" sm="6" md="4" lg="3">
-                <BoardCard Board="@board" OnDeleted="@LoadBoards" />
+            <MudItem xs="12"
+                     sm="6"
+                     md="4"
+                     lg="3">
+                <BoardCard Board=@board
+                           OnDeleted=@LoadBoards />
             </MudItem>
         }
     </MudGrid>
@@ -34,51 +39,66 @@ else if (boards.Any())
 else
 {
     <MudPaper Class="pa-8 text-center">
-        <MudIcon Icon="@Icons.Material.Filled.ViewKanban" 
-                 Size="Size.Large" 
-                 Color="Color.Default" 
+        <MudIcon Icon=@Icons.Material.Filled.ViewKanban
+                 Size=@Size.Large
+                 Color=@Color.Default
                  Class="mb-4" />
-        <MudText Typo="Typo.h6" Class="mb-2">No boards yet</MudText>
-        <MudText Color="Color.Default" Class="mb-4">
+
+        <MudText Typo=@Typo.h6
+                 Class="mb-2">
+            No boards yet
+        </MudText>
+
+        <MudText Color=@Color.Default
+                 Class="mb-4">
             Create your first board to start organizing your tasks
         </MudText>
-        <MudButton Variant="Variant.Filled" 
-                   Color="Color.Primary" 
-                   StartIcon="@Icons.Material.Filled.Add"
-                   OnClick="@(() => showCreateDialog = true)">
+
+        <MudButton Variant=@Variant.Filled
+                   Color=@Color.Primary
+                   StartIcon=@Icons.Material.Filled.Add
+                   OnClick=@(() => showCreateDialog = true)>
             Create Board
         </MudButton>
     </MudPaper>
 }
 
-<MudDialog @bind-IsVisible="showCreateDialog">
+<MudDialog @bind-IsVisible=@showCreateDialog>
     <TitleContent>
-        <MudText Typo="Typo.h6">Create New Board</MudText>
+        <MudText Typo=@Typo.h6>Create New Board</MudText>
     </TitleContent>
+
     <DialogContent>
-        <MudTextField @bind-Value="newBoard.Title" 
-                      Label="Board Title" 
-                      Required="true" 
-                      Variant="Variant.Outlined" 
+        <MudTextField @bind-Value=@newBoard.Title
+                      Label="Board Title"
+                      Required=@true
+                      Variant=@Variant.Outlined
                       Class="mb-4" />
-        <MudTextField @bind-Value="newBoard.Description" 
-                      Label="Description" 
-                      Lines="3" 
-                      Variant="Variant.Outlined" 
+
+        <MudTextField @bind-Value=@newBoard.Description
+                      Label="Description"
+                      Lines="3"
+                      Variant=@Variant.Outlined
                       Class="mb-4" />
-        <MudColorPicker @bind-Text="newBoard.BackgroundColor" 
-                        Label="Background Color" 
-                        Variant="Variant.Outlined" />
+
+        <MudColorPicker @bind-Text=@newBoard.BackgroundColor
+                        Label="Background Color"
+                        Variant=@Variant.Outlined />
     </DialogContent>
+
     <DialogActions>
-        <MudButton OnClick="@(() => showCreateDialog = false)">Cancel</MudButton>
-        <MudButton Color="Color.Primary" 
-                   Variant="Variant.Filled" 
-                   OnClick="CreateBoard"
-                   Disabled="@isCreating">
+        <MudButton OnClick=@(() => showCreateDialog = false)>
+            Cancel
+        </MudButton>
+
+        <MudButton Color=@Color.Primary
+                   Variant=@Variant.Filled
+                   OnClick=@CreateBoard
+                   Disabled=@isCreating>
             @if (isCreating)
             {
-                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                <MudProgressCircular Size=@Size.Small
+                                     Indeterminate=@true />
             }
             else
             {

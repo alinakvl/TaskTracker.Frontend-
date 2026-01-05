@@ -10,31 +10,36 @@
 
 @if (isLoading)
 {
-    <MudProgressLinear Indeterminate="true" />
+    <MudProgressLinear Indeterminate=@true />
 }
 else if (board != null)
 {
     <div class="d-flex justify-space-between align-center mb-4">
         <div>
-            <MudText Typo="Typo.h4">@board.Title</MudText>
+            <MudText Typo=@Typo.h4>@board.Title</MudText>
+
             @if (!string.IsNullOrEmpty(board.Description))
             {
-                <MudText Typo="Typo.body2" Color="Color.Default">
+                <MudText Typo=@Typo.body2
+                         Color=@Color.Default>
                     @board.Description
                 </MudText>
             }
         </div>
+
         <div>
-            <MudIconButton Icon="@Icons.Material.Filled.People"
-                           Color="Color.Primary"
+            <MudIconButton Icon=@Icons.Material.Filled.People
+                           Color=@Color.Primary
                            Title="Board Members"
-                           OnClick="ShowMembers" />
-            <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                           Color="Color.Default"
+                           OnClick=@ShowMembers />
+
+            <MudIconButton Icon=@Icons.Material.Filled.Edit
+                           Color=@Color.Default
                            Title="Edit Board"
-                           OnClick="EditBoard" />
-            <MudIconButton Icon="@Icons.Material.Filled.Settings"
-                           Color="Color.Default"
+                           OnClick=@EditBoard />
+
+            <MudIconButton Icon=@Icons.Material.Filled.Settings
+                           Color=@Color.Default
                            Title="Board Settings" />
         </div>
     </div>
@@ -42,32 +47,36 @@ else if (board != null)
     <div class="board-container">
         @foreach (var list in board.TaskLists.OrderBy(l => l.Position))
         {
-            <TaskListColumn TaskList="@list"
-                            BoardId="@board.Id"
-                            OnTaskUpdated="@LoadBoard"
-                            OnListDeleted="@LoadBoard" />
+            <TaskListColumn TaskList=@list
+                            BoardId=@board.Id
+                            OnTaskUpdated=@LoadBoard
+                            OnListDeleted=@LoadBoard />
         }
 
         <div class="add-list-column">
             @if (showAddList)
             {
-                <MudPaper Class="pa-4" Elevation="2">
-                    <MudTextField @bind-Value="newListTitle"
+                <MudPaper Class="pa-4"
+                          Elevation="2">
+                    <MudTextField @bind-Value=@newListTitle
                                   Label="List Title"
-                                  Variant="Variant.Outlined"
+                                  Variant=@Variant.Outlined
                                   Class="mb-2"
-                                  Immediate="true"
+                                  Immediate=@true
                                   MaxLength="100"
-                                  @ref="listTitleField"
-                                  OnKeyDown="HandleListKeyDown" />
+                                  @ref=@listTitleField
+                                  OnKeyDown=@HandleListKeyDown />
+
                     <div class="d-flex gap-2">
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   OnClick="CreateList"
-                                   Disabled="@(isCreatingList || string.IsNullOrWhiteSpace(newListTitle))">
+                        <MudButton Variant=@Variant.Filled
+                                   Color=@Color.Primary
+                                   OnClick=@CreateList
+                                   Disabled=@(isCreatingList || string.IsNullOrWhiteSpace(newListTitle))>
                             @if (isCreatingList)
                             {
-                                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                <MudProgressCircular Size=@Size.Small
+                                                     Indeterminate=@true
+                                                     Class="mr-2" />
                                 <span>Adding...</span>
                             }
                             else
@@ -75,9 +84,10 @@ else if (board != null)
                                 <text>Add List</text>
                             }
                         </MudButton>
-                        <MudButton Variant="Variant.Text"
-                                   OnClick="CancelAddList"
-                                   Disabled="@isCreatingList">
+
+                        <MudButton Variant=@Variant.Text
+                                   OnClick=@CancelAddList
+                                   Disabled=@isCreatingList>
                             Cancel
                         </MudButton>
                     </div>
@@ -85,11 +95,11 @@ else if (board != null)
             }
             else
             {
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Default"
-                           StartIcon="@Icons.Material.Filled.Add"
-                           OnClick="ShowAddList"
-                           FullWidth="true"
+                <MudButton Variant=@Variant.Filled
+                           Color=@Color.Default
+                           StartIcon=@Icons.Material.Filled.Add
+                           OnClick=@ShowAddList
+                           FullWidth=@true
                            Class="add-list-button">
                     Add List
                 </MudButton>
@@ -99,7 +109,7 @@ else if (board != null)
 }
 else
 {
-    <MudAlert Severity="Severity.Error">Board not found</MudAlert>
+    <MudAlert Severity=@Severity.Error>Board not found</MudAlert>
 }
 
 <style>

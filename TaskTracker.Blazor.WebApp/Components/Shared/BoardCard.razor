@@ -5,52 +5,72 @@
 
 <MudCard Elevation="2"
          Class="board-card-hover"
-         Style="@($"border-left: 6px solid {Board.BackgroundColor}; height: 100%; cursor: pointer;")"
-         @onclick="@(() => Navigation.NavigateTo($"/boards/{Board.Id}"))">
+         Style=@($"border-left: 6px solid {Board.BackgroundColor}; height: 100%; cursor: pointer;")
+         @onclick=@(() => Navigation.NavigateTo($"/boards/{Board.Id}"))>
+
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h6" Color="Color.Inherit">@Board.Title</MudText>
+            <MudText Typo=@Typo.h6
+                     Color=@Color.Inherit>
+                @Board.Title
+            </MudText>
         </CardHeaderContent>
+
         <CardHeaderActions>
-            <MudMenu Icon="@Icons.Material.Filled.MoreVert" 
-                     Color="Color.Default" 
-                     Size="Size.Small"
-                     @onclick:stopPropagation="true">
-                <MudMenuItem OnClick="EditBoard">Edit</MudMenuItem>
-                <MudMenuItem OnClick="ManageMembers">Members</MudMenuItem>
-                <MudMenuItem OnClick="ArchiveBoard">Archive</MudMenuItem>
-                <MudMenuItem OnClick="DeleteBoard">Delete</MudMenuItem>
+            <MudMenu Icon=@Icons.Material.Filled.MoreVert
+                     Color=@Color.Default
+                     Size=@Size.Small
+                     @onclick:stopPropagation=@true>
+                <MudMenuItem OnClick=@EditBoard>Edit</MudMenuItem>
+                <MudMenuItem OnClick=@ManageMembers>Members</MudMenuItem>
+                <MudMenuItem OnClick=@ArchiveBoard>Archive</MudMenuItem>
+                <MudMenuItem OnClick=@DeleteBoard>Delete</MudMenuItem>
             </MudMenu>
         </CardHeaderActions>
     </MudCardHeader>
+
     <MudCardContent>
         @if (!string.IsNullOrEmpty(Board.Description))
         {
-            <MudText Typo="Typo.body2" Class="mb-3" Style="color: gray; min-height: 40px;">
+            <MudText Typo=@Typo.body2
+                     Class="mb-3"
+                     Style="color: gray; min-height: 40px;">
                 @Board.Description
             </MudText>
         }
+
         <div class="d-flex gap-2 mt-auto">
-            <MudChip T="string" Size="Size.Small" Icon="@Icons.Material.Filled.Task" Variant="Variant.Outlined" Color="Color.Primary">
+            <MudChip T="string"
+                     Size=@Size.Small
+                     Icon=@Icons.Material.Filled.Task
+                     Variant=@Variant.Outlined
+                     Color=@Color.Primary>
                 @Board.TasksCount Tasks
             </MudChip>
-            <MudChip T="string" Size="Size.Small" Icon="@Icons.Material.Filled.People" Variant="Variant.Outlined" Color="Color.Secondary">
+
+            <MudChip T="string"
+                     Size=@Size.Small
+                     Icon=@Icons.Material.Filled.People
+                     Variant=@Variant.Outlined
+                     Color=@Color.Secondary>
                 @Board.MembersCount Members
             </MudChip>
         </div>
     </MudCardContent>
+
 </MudCard>
 
 @if (showEditDialog)
 {
-    <EditBoardDialog Board="Board" OnClose="HandleEditClose" />
+    <EditBoardDialog Board=@Board
+                     OnClose=@HandleEditClose />
 }
 
 @if (showMembersDialog)
 {
-    <BoardMembersDialog Board="Board" OnClose="HandleMembersClose" />
+    <BoardMembersDialog Board=@Board
+                        OnClose=@HandleMembersClose />
 }
-
 <style>
     .board-card-hover {
         transition: transform 0.2s, box-shadow 0.2s;

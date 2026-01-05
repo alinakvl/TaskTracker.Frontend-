@@ -3,29 +3,34 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
-<MudPaper Class="task-list-column" Elevation="2">
+<MudPaper Class="task-list-column"
+          Elevation="2">
+
     <div class="list-header">
         <div class="d-flex align-center justify-space-between">
             @if (isEditingTitle)
             {
-                <MudTextField @bind-Value="editedTitle"
-                              Variant="Variant.Text"
-                              Margin="Margin.Dense"
+                <MudTextField @bind-Value=@editedTitle
+                              Variant=@Variant.Text
+                              Margin=@Margin.Dense
                               Class="list-title-edit"
-                              @ref="titleField"
-                              OnBlur="SaveTitle"
-                              OnKeyDown="HandleTitleKeyDown" />
+                              @ref=@titleField
+                              OnBlur=@SaveTitle
+                              OnKeyDown=@HandleTitleKeyDown />
             }
             else
             {
-                <MudText Typo="Typo.h6" Class="list-title" @onclick="StartEditTitle">
+                <MudText Typo=@Typo.h6
+                         Class="list-title"
+                         @onclick=@StartEditTitle>
                     @TaskList.Title
                 </MudText>
             }
-            
-            <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small">
-                <MudMenuItem OnClick="StartEditTitle">Rename</MudMenuItem>
-                <MudMenuItem OnClick="DeleteList">Delete List</MudMenuItem>
+
+            <MudMenu Icon=@Icons.Material.Filled.MoreVert
+                     Size=@Size.Small>
+                <MudMenuItem OnClick=@StartEditTitle>Rename</MudMenuItem>
+                <MudMenuItem OnClick=@DeleteList>Delete List</MudMenuItem>
             </MudMenu>
         </div>
     </div>
@@ -33,21 +38,32 @@
     <div class="list-content">
         @if (TaskList.Tasks.Any())
         {
-            <MudList T="object" Clickable="true" Dense="true">
+            <MudList T="object"
+                     Clickable=@true
+                     Dense=@true>
                 @foreach (var task in TaskList.Tasks.OrderBy(t => t.Position))
                 {
-                    <MudListItem T="object" Class="task-item">
+                    <MudListItem T="object"
+                                 Class="task-item">
                         <div class="task-card">
-                            <MudText Typo="Typo.body2">@task.Title</MudText>
+                            <MudText Typo=@Typo.body2>
+                                @task.Title
+                            </MudText>
+
                             @if (!string.IsNullOrEmpty(task.Description))
                             {
-                                <MudText Typo="Typo.caption" Color="Color.Default" Class="mt-1">
+                                <MudText Typo=@Typo.caption
+                                         Color=@Color.Default
+                                         Class="mt-1">
                                     @task.Description
                                 </MudText>
                             }
+
                             @if (task.DueDate.HasValue)
                             {
-                                <MudChip T="string" Size="Size.Small" Class="mt-2">
+                                <MudChip T="string"
+                                         Size=@Size.Small
+                                         Class="mt-2">
                                     @task.DueDate.Value.ToString("MMM dd")
                                 </MudChip>
                             }
@@ -59,7 +75,8 @@
         else
         {
             <div class="pa-4 text-center">
-                <MudText Typo="Typo.body2" Color="Color.Default">
+                <MudText Typo=@Typo.body2
+                         Color=@Color.Default>
                     No tasks yet
                 </MudText>
             </div>
@@ -69,22 +86,25 @@
     <div class="list-footer pa-2">
         @if (showAddTask)
         {
-            <MudPaper Class="pa-2" Elevation="0">
-                <MudTextField @bind-Value="newTaskTitle"
+            <MudPaper Class="pa-2"
+                      Elevation="0">
+                <MudTextField @bind-Value=@newTaskTitle
                               Label="Task title"
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense"
+                              Variant=@Variant.Outlined
+                              Margin=@Margin.Dense
                               Class="mb-2" />
+
                 <div class="d-flex gap-2">
-                    <MudButton Size="Size.Small"
-                               Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               OnClick="AddTask">
+                    <MudButton Size=@Size.Small
+                               Variant=@Variant.Filled
+                               Color=@Color.Primary
+                               OnClick=@AddTask>
                         Add
                     </MudButton>
-                    <MudButton Size="Size.Small"
-                               Variant="Variant.Text"
-                               OnClick="@(() => showAddTask = false)">
+
+                    <MudButton Size=@Size.Small
+                               Variant=@Variant.Text
+                               OnClick=@(() => showAddTask = false)>
                         Cancel
                     </MudButton>
                 </div>
@@ -92,14 +112,15 @@
         }
         else
         {
-            <MudButton StartIcon="@Icons.Material.Filled.Add"
-                       Variant="Variant.Text"
-                       FullWidth="true"
-                       OnClick="@(() => showAddTask = true)">
+            <MudButton StartIcon=@Icons.Material.Filled.Add
+                       Variant=@Variant.Text
+                       FullWidth=@true
+                       OnClick=@(() => showAddTask = true)>
                 Add Task
             </MudButton>
         }
     </div>
+
 </MudPaper>
 
 <style>

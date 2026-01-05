@@ -10,51 +10,86 @@
 
 @if (isLoading)
 {
-    <div class="d-flex justify-center align-center" style="min-height: 400px;">
-        <MudProgressCircular Size="Size.Large" Indeterminate="true" Color="Color.Primary" />
+    <div class="d-flex justify-center align-center"
+         style="min-height: 400px;">
+        <MudProgressCircular Size=@Size.Large
+                             Indeterminate=@true
+                             Color=@Color.Primary />
     </div>
 }
 else if (task != null)
 {
     <MudGrid>
-        <MudItem xs="12" md="8">
-            <MudPaper Class="pa-6 mb-4" Elevation="2">
+        <MudItem xs="12"
+                 md="8">
+            <MudPaper Class="pa-6 mb-4"
+                      Elevation="2">
+
                 <div class="d-flex justify-space-between align-center mb-4">
-                    <MudText Typo="Typo.h4" Class="fw-bold">@task.Title</MudText>
+                    <MudText Typo=@Typo.h4
+                             Class="fw-bold">
+                        @task.Title
+                    </MudText>
+
                     <div class="d-flex gap-2">
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                       Color="Color.Info"
-                                       Variant="Variant.Outlined"
-                                       OnClick="OpenEditDialog" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                       Color="Color.Error"
-                                       Variant="Variant.Outlined"
-                                       OnClick="DeleteTask" />
+                        <MudIconButton Icon=@Icons.Material.Filled.Edit
+                                       Color=@Color.Info
+                                       Variant=@Variant.Outlined
+                                       OnClick=@OpenEditDialog />
+
+                        <MudIconButton Icon=@Icons.Material.Filled.Delete
+                                       Color=@Color.Error
+                                       Variant=@Variant.Outlined
+                                       OnClick=@DeleteTask />
                     </div>
                 </div>
 
                 @if (!string.IsNullOrEmpty(task.Description))
                 {
-                    <MudText Typo="Typo.h6" Class="mb-2 mt-4 text-muted">Description</MudText>
-                    <MudText Typo="Typo.body1" Style="white-space: pre-wrap;">@task.Description</MudText>
+                    <MudText Typo=@Typo.h6
+                             Class="mb-2 mt-4 text-muted">
+                        Description
+                    </MudText>
+
+                    <MudText Typo=@Typo.body1
+                             Style="white-space: pre-wrap;">
+                        @task.Description
+                    </MudText>
                 }
 
                 <MudDivider Class="my-6" />
 
-                <MudText Typo="Typo.h6" Class="mb-4">
-                    <MudIcon Icon="@Icons.Material.Filled.Comment" Class="me-2" /> Comments
+                <MudText Typo=@Typo.h6
+                         Class="mb-4">
+                    <MudIcon Icon=@Icons.Material.Filled.Comment
+                             Class="me-2" /> Comments
                 </MudText>
-                <CommentSection TaskId="@TaskId" Comments="@task.Comments" />
+
+                <CommentSection TaskId=@TaskId
+                                Comments=@task.Comments />
             </MudPaper>
         </MudItem>
 
-        <MudItem xs="12" md="4">
-            <MudPaper Class="pa-6 mb-4" Elevation="2">
-                <MudText Typo="Typo.h6" Class="mb-4">Task Details</MudText>
+        <MudItem xs="12"
+                 md="4">
+            <MudPaper Class="pa-6 mb-4"
+                      Elevation="2">
+                <MudText Typo=@Typo.h6
+                         Class="mb-4">
+                    Task Details
+                </MudText>
 
                 <div class="mb-4">
-                    <MudText Typo="Typo.caption" Color="Color.Default" Class="d-block mb-1">Priority</MudText>
-                    <MudChip T="string" Color="@GetPriorityColor(task.Priority)" Variant="Variant.Filled" Size="Size.Small">
+                    <MudText Typo=@Typo.caption
+                             Color=@Color.Default
+                             Class="d-block mb-1">
+                        Priority
+                    </MudText>
+
+                    <MudChip T="string"
+                             Color=@GetPriorityColor(task.Priority)
+                             Variant=@Variant.Filled
+                             Size=@Size.Small>
                         @task.PriorityName
                     </MudChip>
                 </div>
@@ -62,10 +97,20 @@ else if (task != null)
                 @if (task.DueDate.HasValue)
                 {
                     <div class="mb-4">
-                        <MudText Typo="Typo.caption" Color="Color.Default" Class="d-block mb-1">Due Date</MudText>
+                        <MudText Typo=@Typo.caption
+                                 Color=@Color.Default
+                                 Class="d-block mb-1">
+                            Due Date
+                        </MudText>
+
                         <div class="d-flex align-center gap-2">
-                            <MudIcon Icon="@Icons.Material.Filled.Event" Size="Size.Small" Color="Color.Info" />
-                            <MudText Typo="Typo.body1">@task.DueDate.Value.ToString("MMM dd, yyyy")</MudText>
+                            <MudIcon Icon=@Icons.Material.Filled.Event
+                                     Size=@Size.Small
+                                     Color=@Color.Info />
+
+                            <MudText Typo=@Typo.body1>
+                                @task.DueDate.Value.ToString("MMM dd, yyyy")
+                            </MudText>
                         </div>
                     </div>
                 }
@@ -73,11 +118,18 @@ else if (task != null)
                 @if (!string.IsNullOrEmpty(task.AssignedUserName))
                 {
                     <div class="mb-4">
-                        <MudText Typo="Typo.caption" Color="Color.Default" Class="d-block mb-1">Assigned To</MudText>
+                        <MudText Typo=@Typo.caption
+                                 Color=@Color.Default
+                                 Class="d-block mb-1">
+                            Assigned To
+                        </MudText>
+
                         <div class="d-flex align-center gap-2">
-                            <MudAvatar Size="Size.Small" Color="Color.Primary">
+                            <MudAvatar Size=@Size.Small
+                                       Color=@Color.Primary>
                                 @task.AssignedUserName.FirstOrDefault().ToString().ToUpper()
                             </MudAvatar>
+
                             <MudText>@task.AssignedUserName</MudText>
                         </div>
                     </div>
@@ -87,21 +139,34 @@ else if (task != null)
 
                 <div class="d-flex justify-space-between">
                     <div>
-                        <MudText Typo="Typo.caption" Color="Color.Default" Class="d-block">Created</MudText>
-                        <MudText Typo="Typo.body2">@task.CreatedAt.ToString("MMM dd, yyyy")</MudText>
+                        <MudText Typo=@Typo.caption
+                                 Color=@Color.Default
+                                 Class="d-block">
+                            Created
+                        </MudText>
+
+                        <MudText Typo=@Typo.body2>
+                            @task.CreatedAt.ToString("MMM dd, yyyy")
+                        </MudText>
                     </div>
-                    
                 </div>
             </MudPaper>
 
             @if (task.Labels != null && task.Labels.Any())
             {
-                <MudPaper Class="pa-6 mb-4" Elevation="2">
-                    <MudText Typo="Typo.h6" Class="mb-3">Labels</MudText>
+                <MudPaper Class="pa-6 mb-4"
+                          Elevation="2">
+                    <MudText Typo=@Typo.h6
+                             Class="mb-3">
+                        Labels
+                    </MudText>
+
                     <div class="d-flex flex-wrap gap-2">
                         @foreach (var label in task.Labels)
                         {
-                            <MudChip T="string" Style="@($"background-color: {label.Color}; color: white;")" Size="Size.Small">
+                            <MudChip T="string"
+                                     Style=@($"background-color: {label.Color}; color: white;")
+                                     Size=@Size.Small>
                                 @label.Name
                             </MudChip>
                         }
@@ -113,15 +178,17 @@ else if (task != null)
 }
 else
 {
-    <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="mt-4">
+    <MudAlert Severity=@Severity.Error
+              Variant=@Variant.Filled
+              Class="mt-4">
         Task not found or access denied.
     </MudAlert>
 }
 
 @if (showEditDialog && task != null)
 {
-    <EditTaskDialog Task="@MapToTaskDto(task)"
-                    OnClose="HandleEditTaskClose" />
+    <EditTaskDialog Task=@MapToTaskDto(task)
+                    OnClose=@HandleEditTaskClose />
 }
 
 @code {
