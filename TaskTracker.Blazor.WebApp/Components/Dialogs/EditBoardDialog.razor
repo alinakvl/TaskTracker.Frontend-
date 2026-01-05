@@ -1,6 +1,4 @@
 ﻿@using TaskTracker.Blazor.Domain.DTOs
-@inject IBoardService BoardService
-@inject ISnackbar Snackbar
 
 <div class="modal-backdrop fade show"
      @onclick=@Cancel>
@@ -69,47 +67,4 @@
 
 </div>
 
-@code {
-    [Parameter] public BoardDto Board { get; set; } = null!;
-    [Parameter] public EventCallback<BoardDto?> OnClose { get; set; }
-    private UpdateBoardDto updateBoard = new();
-    private bool isSaving = false;
 
-    protected override void OnInitialized()
-    {
-        updateBoard = new UpdateBoardDto
-        {
-            Title = Board.Title,
-            Description = Board.Description,
-            BackgroundColor = Board.BackgroundColor
-        };
-    }
-
-    private async Task SaveChanges()
-    {
-        if (string.IsNullOrWhiteSpace(updateBoard.Title))
-        {
-            Snackbar.Add("Board title is required", Severity.Warning);
-            return;
-        }
-        isSaving = true;
-        try
-        {
-            var updated = await BoardService.UpdateBoardAsync(Board.Id, updateBoard);
-            if (updated != null)
-            {
-                Snackbar.Add("Board updated successfully!", Severity.Success);
-                await OnClose.InvokeAsync(updated);
-            }
-        }
-        catch
-        {
-            Snackbar.Add("Failed to update board", Severity.Error);
-        }
-        finally
-        {
-            isSaving = false;
-        }
-    }
-    private Task Cancel() => OnClose.InvokeAsync(null);
-}

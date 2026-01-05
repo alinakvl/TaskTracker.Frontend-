@@ -1,10 +1,6 @@
 ﻿@page "/login"
 @layout EmptyLayout
 @using TaskTracker.Blazor.WebApp.Authentication
-@inject IAuthService AuthService
-@inject NavigationManager Navigation
-@inject ISnackbar Snackbar
-@inject AuthenticationStateProvider AuthStateProvider
 
 <MudContainer MaxWidth=@MaxWidth.Small
               Class="d-flex align-center justify-center"
@@ -77,40 +73,3 @@
     </MudPaper>
 </MudContainer>
 
-@code {
-    private LoginDto loginModel = new();
-    private bool isLoading = false;
-
-    private async Task HandleLogin()
-    {
-        isLoading = true;
-        try
-        {
-            var success = await AuthService.LoginAsync(loginModel);
-
-            if (success)
-            {
-               
-                if (AuthStateProvider is CustomAuthStateProvider customAuthProvider)
-                {
-                    customAuthProvider.NotifyAuthenticationStateChanged();
-                }
-
-                Snackbar.Add("Login successful!", Severity.Success);
-                Navigation.NavigateTo("/");
-            }
-            else
-            {
-                Snackbar.Add("Invalid email or password", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
-        }
-    }
-}

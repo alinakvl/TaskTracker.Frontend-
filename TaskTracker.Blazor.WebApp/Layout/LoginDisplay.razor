@@ -1,8 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @using TaskTracker.Blazor.Services.Abstraction
-@inject IAuthService AuthService
-@inject NavigationManager Navigation
-@inject AuthenticationStateProvider AuthStateProvider
 
 <AuthorizeView>
     <Authorized>
@@ -31,15 +28,3 @@
         </MudButton>
     </NotAuthorized>
 </AuthorizeView>
-
-@code {
-    private async Task Logout()
-    {
-        await AuthService.LogoutAsync();
-        if (AuthStateProvider is TaskTracker.Blazor.WebApp.Authentication.CustomAuthStateProvider customProvider)
-        {
-            customProvider.NotifyAuthenticationStateChanged();
-        }
-        Navigation.NavigateTo("/", forceLoad: true);
-    }
-}

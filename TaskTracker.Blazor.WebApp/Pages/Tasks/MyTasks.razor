@@ -1,7 +1,6 @@
 ﻿@page "/tasks"
 @attribute [Authorize]
 @using TaskTracker.Blazor.Domain.DTOs
-@inject ITaskService TaskService
 
 <PageTitle>My Tasks - TaskTracker</PageTitle>
 
@@ -66,25 +65,3 @@ else
     </MudAlert>
 }
 
-@code {
-    private List<TaskDto> tasks = new();
-    private bool isLoading = true;
-
-    protected override async Task OnInitializedAsync()
-    {
-        isLoading = true;
-        tasks = await TaskService.GetMyTasksAsync();
-        isLoading = false;
-    }
-
-    private Color GetPriorityColor(int priority)
-    {
-        return priority switch
-        {
-            4 => Color.Error,
-            3 => Color.Warning,
-            2 => Color.Info,
-            _ => Color.Default
-        };
-    }
-}
