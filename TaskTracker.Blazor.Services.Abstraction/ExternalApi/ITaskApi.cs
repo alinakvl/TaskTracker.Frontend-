@@ -1,7 +1,7 @@
 ﻿using Refit;
 using TaskTracker.Blazor.Domain.DTOs.Tasks;
 
-namespace TaskTracker.Blazor.Services.Abstraction;
+namespace TaskTracker.Blazor.Services.Abstraction.ExternalApi;
 
 public interface ITaskApi
 {

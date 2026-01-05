@@ -1,5 +1,6 @@
 ﻿using TaskTracker.Blazor.Domain.DTOs.Comments;
 using TaskTracker.Blazor.Services.Abstraction;
+using TaskTracker.Blazor.Services.Abstraction.ExternalApi;
 
 namespace TaskTracker.Blazor.Services;
 

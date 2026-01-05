@@ -4,6 +4,7 @@ using TaskTracker.Blazor.Domain.Constants;
 using TaskTracker.Blazor.Domain.DTOs.Auth;
 using TaskTracker.Blazor.Domain.DTOs.Users;
 using TaskTracker.Blazor.Services.Abstraction;
+using TaskTracker.Blazor.Services.Abstraction.ExternalApi;
 
 namespace TaskTracker.Blazor.Services;
 

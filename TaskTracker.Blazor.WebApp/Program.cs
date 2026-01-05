@@ -9,6 +9,7 @@ using TaskTracker.Blazor.WebApp.Authentication;
 using TaskTracker.Blazor.WebApp.Handlers;
 using TaskTracker.Blazor.Services;
 using TaskTracker.Blazor.Services.Abstraction;
+using TaskTracker.Blazor.Services.Abstraction.ExternalApi;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

@@ -1,7 +1,7 @@
 ﻿using Refit;
 using TaskTracker.Blazor.Domain.DTOs.Auth;
 
-namespace TaskTracker.Blazor.Services.Abstraction;
+namespace TaskTracker.Blazor.Services.Abstraction.ExternalApi;
 
 public interface IAuthApi
 {
