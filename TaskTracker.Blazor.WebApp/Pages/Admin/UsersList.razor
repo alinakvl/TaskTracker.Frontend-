@@ -156,20 +156,6 @@ else
         }
     }
 
-    // private async Task DeleteUser(UserDto user)
-    // {
-    //     bool? result = await DialogService.ShowMessageBox("Confirm Delete",
-    //         $"Delete {user.FullName}?", yesText: "Delete", cancelText: "Cancel");
-
-    //     if (result == true)
-    //     {
-    //         if (await UserService.DeleteUserAsync(user.Id))
-    //         {
-    //             Snackbar.Add("User deleted", Severity.Success);
-    //             await LoadUsers();
-    //         }
-    //     }
-    // }
     private async Task DeleteUser(UserDto user)
     {
         bool? result = await DialogService.ShowMessageBox(

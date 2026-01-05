@@ -225,42 +225,6 @@
             isEditingTitle = false;
         }
     }
-
-    // private async Task DeleteList()
-    // {
-    //     var result = await DialogService.ShowMessageBox(
-    //         "Delete List",
-    //         $"Are you sure you want to delete '{TaskList.Title}'? All tasks in this list will be deleted.",
-    //         yesText: "Delete",
-    //         cancelText: "Cancel");
-
-    //     if (result == true)
-    //     {
-    //         try
-    //         {
-               
-    //             var success = await TaskListService.DeleteTaskListAsync(TaskList.Id);
-
-    //             if (success)
-    //             {
-    //                 Snackbar.Add("List deleted", Severity.Success);
-                    
-    //                 await OnListDeleted.InvokeAsync();
-    //             }
-    //             else
-    //             {
-    //                 Snackbar.Add("Failed to delete list", Severity.Error);
-    //             }
-    //         }
-    //         catch (Exception ex)
-    //         {
-                
-    //             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
-    //             Console.WriteLine($"Delete error: {ex}");
-    //         }
-           
-    //     }
-    // }
     private async Task DeleteList()
     {
         var result = await DialogService.ShowMessageBox(
@@ -296,14 +260,6 @@
             }
         }
     }
-
-    // private Task AddTask()
-    // {
-    //     Snackbar.Add("Task creation not yet implemented", Severity.Info);
-    //     showAddTask = false;
-    //     newTaskTitle = string.Empty;
-    //     return Task.CompletedTask;
-    // }
     private async Task AddTask()
     {
         if (string.IsNullOrWhiteSpace(newTaskTitle))

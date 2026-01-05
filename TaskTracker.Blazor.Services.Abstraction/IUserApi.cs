@@ -21,10 +21,6 @@ public interface IUserApi
     [Headers("Authorization: Bearer")]
     Task DeleteUserAsync(Guid id);
 
-    //[Patch("/users/{userId}/role")]
-    //[Headers("Authorization: Bearer")]
-    //Task ChangeUserRoleAsync(Guid userId, [Body] string role);
-
     [Patch("/users/{userId}/role")]
     [Headers("Authorization: Bearer")]
     Task ChangeUserRoleAsync(Guid userId, [Body] ChangeRoleDto roleDto);

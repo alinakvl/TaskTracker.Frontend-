@@ -79,19 +79,6 @@ public class UserService : IUserService
         }
     }
 
-    //public async Task<bool> ChangeUserRoleAsync(Guid userId, string role)
-    //{
-    //    try
-    //    {
-    //        await _userApi.ChangeUserRoleAsync(userId, role);
-    //        return true;
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Console.WriteLine($"Error changing user role: {ex.Message}");
-    //        return false;
-    //    }
-    //}
     public async Task<bool> ChangeUserRoleAsync(Guid userId, ChangeRoleDto roleDto)
     {
         try
