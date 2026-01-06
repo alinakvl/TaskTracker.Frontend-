@@ -5,7 +5,7 @@ using TaskTracker.Blazor.Domain.DTOs.Tasks;
 namespace TaskTracker.Blazor.WebApp.Components.Shared;
 
 public partial class TaskCard
- {
+{
     [Inject]
     private NavigationManager Navigation { get; set; } = default!;
 
@@ -14,27 +14,29 @@ public partial class TaskCard
 
     [Parameter]
     public TaskDto Task { get; set; } = null!;
+
     [Parameter]
     public EventCallback OnUpdated { get; set; }
 
-private Color GetPriorityColor(int priority)
-{
-    return priority switch
+    private Color GetPriorityColor(int priority)
     {
-        4 => Color.Error,
-        3 => Color.Warning,
-        _ => Color.Default
-    };
-}
+        return priority switch
+        {
+            4 => Color.Error,
+            3 => Color.Warning,
+            _ => Color.Default
+        };
+    }
 
-private Color GetDueDateColor(DateTime dueDate)
-{
-    var daysUntilDue = (dueDate - DateTime.UtcNow).Days;
+    private Color GetDueDateColor(DateTime dueDate)
+    {
+        var daysUntilDue = (dueDate - DateTime.UtcNow).Days;
 
-    if (daysUntilDue < 0)
-        return Color.Error;
-    if (daysUntilDue <= 2)
-        return Color.Warning;
-    return Color.Default;
-}
+        if (daysUntilDue < 0)
+            return Color.Error;
+        if (daysUntilDue <= 2)
+            return Color.Warning;
+
+        return Color.Default;
+    }
 }

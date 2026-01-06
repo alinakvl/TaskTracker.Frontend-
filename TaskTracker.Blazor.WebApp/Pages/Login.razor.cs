@@ -8,7 +8,7 @@ using TaskTracker.Blazor.WebApp.Authentication;
 namespace TaskTracker.Blazor.WebApp.Pages;
 
 public partial class Login
- {
+{
     [Inject]
     private IAuthService AuthService { get; set; } = default!;
 
@@ -20,39 +20,39 @@ public partial class Login
 
     [Inject]
     private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
+
     private LoginDto loginModel = new();
     private bool isLoading = false;
 
-private async Task HandleLogin()
-{
-    isLoading = true;
-    try
+    private async Task HandleLogin()
     {
-        var success = await AuthService.LoginAsync(loginModel);
-
-        if (success)
+        isLoading = true;
+        try
         {
+            var success = await AuthService.LoginAsync(loginModel);
 
-            if (AuthStateProvider is CustomAuthStateProvider customAuthProvider)
+            if (success)
             {
-                customAuthProvider.NotifyAuthenticationStateChanged();
-            }
+                if (AuthStateProvider is CustomAuthStateProvider customAuthProvider)
+                {
+                    customAuthProvider.NotifyAuthenticationStateChanged();
+                }
 
-            Snackbar.Add("Login successful!", Severity.Success);
-            Navigation.NavigateTo("/");
+                Snackbar.Add("Login successful!", Severity.Success);
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                Snackbar.Add("Invalid email or password", Severity.Error);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Snackbar.Add("Invalid email or password", Severity.Error);
+            Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
-    catch (Exception ex)
-    {
-        Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
-    }
-    finally
-    {
-        isLoading = false;
-    }
-}
 }
