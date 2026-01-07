@@ -67,4 +67,16 @@ public class UserService : IUserService
         var response = await _userApi.ChangeUserRoleAsync(userId, roleDto);
         return response.IsSuccessStatusCode;
     }
+
+    public async Task<IEnumerable<UserDto>> SearchUsersAsync(string term)
+    {
+        var response = await _userApi.SearchUsersAsync(term);
+
+        if (response.IsSuccessStatusCode && response.Content != null)
+        {
+            return response.Content;
+        }
+
+        return new List<UserDto>();
+    }
 }

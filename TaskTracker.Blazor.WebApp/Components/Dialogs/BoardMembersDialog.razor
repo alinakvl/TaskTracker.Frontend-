@@ -1,5 +1,6 @@
 ﻿@using TaskTracker.Blazor.Domain.DTOs
 @using TaskTracker.Blazor.Domain.DTOs.Boards
+@using TaskTracker.Blazor.Domain.DTOs.Users
 
 <div class="modal-backdrop fade show"
      @onclick=@Close>
@@ -32,28 +33,36 @@
                 }
                 else
                 {
-                    <h6 class="fw-bold mb-3">Add Member by User ID</h6>
+                    <h6 class="fw-bold mb-3">Add New Member</h6>
 
-                    <div class="row g-2 mb-4 bg-light p-3 rounded border">
+                    <div class="row g-2 mb-4 bg-light p-3 rounded border align-items-center">
                         <div class="col-md-7">
-                            <input type="text"
-                                   class="form-control"
-                                   placeholder="User GUID (e.g. a0ddd38a...)"
-                                   @bind=@newUserIdString>
+                            <MudAutocomplete T="UserDto"
+                                             Label="Search by Name or Email"
+                                             @bind-Value=@selectedUserToAdd
+                                             SearchFunc=@SearchUsers
+                                             ToStringFunc="@(u => u == null ? null : $"{u.FirstName} {u.LastName} ({u.Email})")"
+                                             Placeholder="Start typing..."
+                                             AdornmentIcon="@Icons.Material.Filled.Search"
+                                             ResetValueOnEmptyText="true"
+                                             CoerceText="false"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
                         </div>
 
                         <div class="col-md-3">
                             <select class="form-select"
+                                    style="height: 40px;"
                                     @bind=@selectedRole>
-                                <option value="0">Member</option>
-                                <option value="1">Admin</option>
+                                <option value="3">Member</option>
+                                <option value="2">Admin</option>
                             </select>
                         </div>
 
                         <div class="col-md-2 d-grid">
                             <button class="btn btn-success"
-                                    @onclick=@AddMemberById
-                                    disabled=@isAdding>
+                                    disabled=@(isAdding || selectedUserToAdd == null)
+                                    @onclick=@AddSelectedMember>
                                 @(isAdding ? "..." : "Add")
                             </button>
                         </div>
@@ -68,26 +77,43 @@
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
                                          style="width:40px; height:40px;">
-                                        @member.UserName.FirstOrDefault().ToString().ToUpper()
+                                        @(string.IsNullOrEmpty(member.UserName) ? "?" : member.UserName.Substring(0, 1).ToUpper())
                                     </div>
 
                                     <div>
-                                        <div class="fw-bold">@member.UserName</div>
+                                        <div class="fw-bold">
+                                            @(string.IsNullOrEmpty(member.UserName) ? "Unknown User" : member.UserName)
+                                        </div>
+
                                         <small class="text-muted">@member.RoleName</small>
                                     </div>
                                 </div>
 
-                                @if (member.UserId != Board.OwnerId)
-                                {
-                                    <button class="btn btn-sm btn-outline-danger"
-                                            @onclick=@(() => RemoveMember(member))>
-                                        Remove
-                                    </button>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning text-dark">Owner</span>
-                                }
+                                <div>
+                                    @if (member.UserId == Board.OwnerId)
+                                    {
+                                        <span class="badge bg-warning text-dark">Owner</span>
+                                    }
+                                    else
+                                    {
+                                        var isMe = member.UserId == currentUserId;
+
+                                        if (isMe)
+                                        {
+                                            <button class="btn btn-sm btn-outline-warning"
+                                                    @onclick=@(() => RemoveMember(member))>
+                                                <i class="bi bi-box-arrow-right"></i> Leave
+                                            </button>
+                                        }
+                                        else if (myRole == 1 || (myRole == 2 && member.Role == 3))
+                                        {
+                                            <button class="btn btn-sm btn-outline-danger"
+                                                    @onclick=@(() => RemoveMember(member))>
+                                                Remove
+                                            </button>
+                                        }
+                                    }
+                                </div>
                             </div>
                         }
                     </div>
@@ -103,6 +129,4 @@
 
         </div>
     </div>
-
 </div>
-
