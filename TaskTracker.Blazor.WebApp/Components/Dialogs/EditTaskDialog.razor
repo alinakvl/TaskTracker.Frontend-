@@ -1,0 +1,103 @@
+﻿@using TaskTracker.Blazor.Domain.DTOs.Tasks
+@using TaskTracker.Blazor.Domain.DTOs
+
+<div class="modal-backdrop fade show"
+     @onclick=@Cancel>
+</div>
+
+<div class="modal fade show d-block"
+     tabindex="-1"
+     role="dialog"
+     @onclick=@Cancel>
+
+    <div class="modal-dialog modal-dialog-centered shadow-lg"
+         role="document"
+         @onclick:stopPropagation>
+
+        <div class="modal-content border-0 animate-fade-in">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-list-check me-2"></i>Edit Task
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        @onclick=@Cancel
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <div class="modal-body p-4">
+                <EditForm Model=@model
+                          OnValidSubmit=@Submit>
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Title</label>
+
+                        <InputText class="form-control"
+                                   @bind-Value=@model.Title
+                                   placeholder="What needs to be done?" />
+
+                        <ValidationMessage For=@(() => model.Title)
+                                           class="text-danger small" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+
+                        <InputTextArea class="form-control"
+                                       @bind-Value=@model.Description
+                                       rows="3"
+                                       placeholder="Add some details..." />
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Priority</label>
+
+                            <InputSelect class="form-select"
+                                         @bind-Value=@model.Priority>
+                                <option value="1">Low</option>
+                                <option value="2">Medium</option>
+                                <option value="3">High</option>
+                                <option value="4">Critical</option>
+                            </InputSelect>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Due Date</label>
+
+                            <InputDate class="form-control"
+                                       @bind-Value=@dueDate />
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger mt-3 mb-0 py-2 small">
+                            <i class="bi bi-exclamation-circle me-2"></i>@errorMessage
+                        </div>
+                    }
+                </EditForm>
+            </div>
+
+            <div class="modal-footer bg-light">
+                <button type="button"
+                        class="btn btn-outline-secondary px-4"
+                        @onclick=@Cancel>
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary px-4"
+                        @onclick=@Submit>
+                    <i class="bi bi-save me-1"></i> Save Changes
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+

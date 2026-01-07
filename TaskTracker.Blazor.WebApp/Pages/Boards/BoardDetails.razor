@@ -1,0 +1,112 @@
+﻿@page "/boards/{BoardId:guid}"
+@attribute [Authorize]
+
+<PageTitle>@board?.Title - TaskTracker</PageTitle>
+
+@if (isLoading)
+{
+    <MudProgressLinear Indeterminate=@true />
+}
+else if (board != null)
+{
+    <div class="d-flex justify-space-between align-center mb-4">
+        <div>
+            <MudText Typo=@Typo.h4>@board.Title</MudText>
+
+            @if (!string.IsNullOrEmpty(board.Description))
+            {
+                <MudText Typo=@Typo.body2
+                         Color=@Color.Default>
+                    @board.Description
+                </MudText>
+            }
+        </div>
+
+        <div>
+            <MudIconButton Icon=@Icons.Material.Filled.People
+                           Color=@Color.Primary
+                           Title="Board Members"
+                           OnClick=@ShowMembers />
+
+            <MudIconButton Icon=@Icons.Material.Filled.Edit
+                           Color=@Color.Default
+                           Title="Edit Board"
+                           OnClick=@EditBoard />
+
+            <MudIconButton Icon=@Icons.Material.Filled.Settings
+                           Color=@Color.Default
+                           Title="Board Settings" />
+        </div>
+    </div>
+
+    <div class="board-container">
+        @foreach (var list in board.TaskLists.OrderBy(l => l.Position))
+        {
+            <TaskListColumn TaskList=@list
+                            BoardId=@board.Id
+                            OnTaskUpdated=@LoadBoard
+                            OnListDeleted=@LoadBoard />
+        }
+
+        <div class="add-list-column">
+            @if (showAddList)
+            {
+                <MudPaper Class="pa-4"
+                          Elevation="2">
+                    <MudTextField @bind-Value=@newListTitle
+                                  Label="List Title"
+                                  Variant=@Variant.Outlined
+                                  Class="mb-2"
+                                  Immediate=@true
+                                  MaxLength="100"
+                                  @ref=@listTitleField
+                                  OnKeyDown=@HandleListKeyDown />
+
+                    <div class="d-flex gap-2">
+                        <MudButton Variant=@Variant.Filled
+                                   Color=@Color.Primary
+                                   OnClick=@CreateList
+                                   Disabled=@(isCreatingList || string.IsNullOrWhiteSpace(newListTitle))>
+                            @if (isCreatingList)
+                            {
+                                <MudProgressCircular Size=@Size.Small
+                                                     Indeterminate=@true
+                                                     Class="mr-2" />
+                                <span>Adding...</span>
+                            }
+                            else
+                            {
+                                <text>Add List</text>
+                            }
+                        </MudButton>
+
+                        <MudButton Variant=@Variant.Text
+                                   OnClick=@CancelAddList
+                                   Disabled=@isCreatingList>
+                            Cancel
+                        </MudButton>
+                    </div>
+                </MudPaper>
+            }
+            else
+            {
+                <MudButton Variant=@Variant.Filled
+                           Color=@Color.Default
+                           StartIcon=@Icons.Material.Filled.Add
+                           OnClick=@ShowAddList
+                           FullWidth=@true
+                           Class="add-list-button">
+                    Add List
+                </MudButton>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <MudAlert Severity=@Severity.Error>Board not found</MudAlert>
+}
+
+
+
+

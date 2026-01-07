@@ -1,0 +1,83 @@
+﻿<div class="modal fade show d-block"
+     tabindex="-1"
+     style="background-color: rgba(0,0,0,0.5); z-index: 1050;">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Change User Role</h5>
+
+                <button type="button"
+                        class="btn-close"
+                        @onclick=@Cancel>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p class="text-muted small mb-3">Select a new role for this user.</p>
+
+                <div class="list-group">
+                    <label class="list-group-item d-flex gap-2 py-3"
+                           style="cursor: pointer;">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="role"
+                               checked=@(selectedRole == "Admin")
+                               @onchange=@(() => selectedRole = "Admin")>
+
+                        <span>
+                            <strong>Admin</strong>
+                            <small class="d-block text-muted">Full access to all features </small>
+                        </span>
+                    </label>
+
+                    <label class="list-group-item d-flex gap-2 py-3"
+                           style="cursor: pointer;">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="role"
+                               checked=@(selectedRole == "User")
+                               @onchange=@(() => selectedRole = "User")>
+
+                        <span>
+                            <strong>User</strong>
+                            <small class="d-block text-muted">Standard user access </small>
+                        </span>
+                    </label>
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger mt-3">
+                        @errorMessage
+                    </div>
+                }
+            </div>
+
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        @onclick=@Cancel>
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary"
+                        @onclick=@Submit
+                        disabled=@isSubmitting>
+                    @if (isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm"></span>
+                    }
+                    else
+                    {
+                        <span>Change Role</span>
+                    }
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+

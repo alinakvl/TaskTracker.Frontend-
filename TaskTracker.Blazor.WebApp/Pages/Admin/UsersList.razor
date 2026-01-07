@@ -1,0 +1,165 @@
+﻿@page "/admin/users"
+@attribute [Authorize]
+
+<PageTitle>Users Management - TaskTracker</PageTitle>
+
+<MudText Typo=@Typo.h4
+         Class="mb-4">
+    Users Management
+</MudText>
+
+@if (isLoading)
+{
+    <MudProgressLinear Indeterminate=@true
+                       Color=@Color.Primary />
+}
+else
+{
+    <MudPaper Elevation="2"
+              Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value=@searchString
+                              Placeholder="Search users..."
+                              Adornment=@Adornment.Start
+                              AdornmentIcon=@Icons.Material.Filled.Search
+                              Variant=@Variant.Outlined
+                              Immediate=@true
+                              DebounceInterval="300" />
+            </MudItem>
+
+            <MudItem xs="12"
+                     md="6"
+                     Class="d-flex justify-end align-center">
+                <MudText Typo=@Typo.body1
+                         Class="mr-4">
+                    Total Users: <strong>@users.Count</strong>
+                </MudText>
+
+                <MudButton Variant=@Variant.Filled
+                           Color=@Color.Primary
+                           StartIcon=@Icons.Material.Filled.Refresh
+                           OnClick=@LoadUsers>
+                    Refresh
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudTable Items=@FilteredUsers
+              Hover=@true
+              Striped=@true
+              Breakpoint=@Breakpoint.Sm>
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel SortBy=@(new Func<UserDto, object>(x => x.FirstName))>
+                    Name
+                </MudTableSortLabel>
+            </MudTh>
+
+            <MudTh>
+                <MudTableSortLabel SortBy=@(new Func<UserDto, object>(x => x.Email))>
+                    Email
+                </MudTableSortLabel>
+            </MudTh>
+
+            <MudTh>
+                <MudTableSortLabel SortBy=@(new Func<UserDto, object>(x => x.Role))>
+                    Role
+                </MudTableSortLabel>
+            </MudTh>
+
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+
+        <RowTemplate>
+            <MudTd DataLabel="Name">
+                <div class="d-flex align-center gap-2">
+                    <MudAvatar Color=@Color.Primary
+                               Size=@Size.Small
+                               Image=@context.AvatarUrl>
+                        @context.FirstName?.FirstOrDefault()
+                    </MudAvatar>
+
+                    <MudText>
+                        <strong>@context.FullName</strong>
+                    </MudText>
+                </div>
+            </MudTd>
+
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+
+            <MudTd DataLabel="Role">
+                <MudChip T="string"
+                         Color=@GetRoleColor(context.Role)
+                         Size=@Size.Small>
+                    @context.Role
+                </MudChip>
+            </MudTd>
+
+            <MudTd DataLabel="Actions">
+                <MudIconButton Icon=@Icons.Material.Filled.Edit
+                               Color=@Color.Info
+                               Size=@Size.Small
+                               OnClick=@(() => OpenEditUser(context)) />
+
+                <MudIconButton Icon=@Icons.Material.Filled.Security
+                               Color=@Color.Warning
+                               Size=@Size.Small
+                               OnClick=@(() => OpenChangeRole(context)) />
+
+                <MudIconButton Icon=@Icons.Material.Filled.Delete
+                               Color=@Color.Error
+                               Size=@Size.Small
+                               OnClick=@(() => DeleteUser(context)) />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    <MudGrid Class="mt-4">
+        <MudItem xs="12" sm="4">
+            <MudPaper Class="pa-4 text-center"
+                      Elevation="2">
+                <MudText Typo=@Typo.h6
+                         Color=@Color.Error>
+                    Admins: @GetUserCountByRole("Admin")
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="4">
+            <MudPaper Class="pa-4 text-center"
+                      Elevation="2">
+                <MudText Typo=@Typo.h6
+                         Color=@Color.Success>
+                    Users: @GetUserCountByRole("User")
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="4">
+            <MudPaper Class="pa-4 text-center"
+                      Elevation="2">
+                <MudText Typo=@Typo.h6
+                         Color=@Color.Info>
+                    Guests: @GetUserCountByRole("Guest")
+                </MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
+
+@if (showEditDialog && selectedUser != null)
+{
+    <EditUserDialog UserId=@selectedUser.Id
+                    ExistingUser=@selectedUser
+                    OnClose=@HandleEditDialogClose />
+}
+
+@if (showRoleDialog && selectedUser != null)
+{
+    <ChangeRoleDialog UserId=@selectedUser.Id
+                      CurrentRole=@selectedUser.Role
+                      OnClose=@HandleRoleDialogClose />
+}
+

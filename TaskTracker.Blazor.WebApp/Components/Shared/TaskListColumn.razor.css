@@ -1,0 +1,54 @@
+﻿.task-list-column {
+    min-width: 280px;
+    max-width: 280px;
+    background-color: #f4f5f7;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 250px);
+}
+
+.list-header {
+    padding: 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.list-title {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    flex: 1;
+}
+
+    .list-title:hover {
+        background-color: rgba(0,0,0,0.04);
+    }
+
+.list-title-edit {
+    flex: 1;
+}
+
+.list-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.task-item {
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background-color: white;
+}
+
+.task-card {
+    padding: 8px;
+    cursor: pointer;
+}
+
+    .task-card:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+
+.list-footer {
+    border-top: 1px solid rgba(0,0,0,0.08);
+}

@@ -1,0 +1,108 @@
+﻿<div class="modal-backdrop fade show"
+     @onclick=@Cancel>
+</div>
+
+<div class="modal fade show d-block"
+     tabindex="-1"
+     role="dialog"
+     @onclick=@Cancel>
+
+    <div class="modal-dialog modal-dialog-centered shadow-lg"
+         role="document"
+         @onclick:stopPropagation>
+
+        <div class="modal-content border-0 animate-fade-in">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil-square me-2"></i>Edit User Profile
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        @onclick=@Cancel
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">First Name</label>
+
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+
+                        <input type="text"
+                               class="form-control"
+                               @bind=@model.FirstName
+                               placeholder="Enter first name">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Last Name</label>
+
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+
+                        <input type="text"
+                               class="form-control"
+                               @bind=@model.LastName
+                               placeholder="Enter last name">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Avatar URL</label>
+
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-image"></i></span>
+
+                        <input type="text"
+                               class="form-control"
+                               @bind=@model.AvatarUrl
+                               placeholder="https://example.com/photo.jpg">
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger d-flex align-items-center animate-fade-in"
+                         role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div>@errorMessage</div>
+                    </div>
+                }
+            </div>
+
+            <div class="modal-footer bg-light">
+                <button type="button"
+                        class="btn btn-outline-secondary px-4"
+                        @onclick=@Cancel
+                        disabled=@isSubmitting>
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary px-4"
+                        @onclick=@Submit
+                        disabled=@isSubmitting>
+                    @if (isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"
+                              role="status">
+                        </span>
+                        <span>Saving...</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-check-lg me-1"></i>
+                        <span>Save Changes</span>
+                    }
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+

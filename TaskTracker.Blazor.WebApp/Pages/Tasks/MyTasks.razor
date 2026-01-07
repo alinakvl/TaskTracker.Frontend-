@@ -1,0 +1,67 @@
+﻿@page "/tasks"
+@attribute [Authorize]
+@using TaskTracker.Blazor.Domain.DTOs
+
+<PageTitle>My Tasks - TaskTracker</PageTitle>
+
+<MudText Typo=@Typo.h4
+         Class="mb-4">
+    My Tasks
+</MudText>
+
+@if (isLoading)
+{
+    <MudProgressLinear Indeterminate=@true />
+}
+else if (tasks.Any())
+{
+    <MudTable Items=@tasks
+              Hover=@true
+              Breakpoint=@Breakpoint.Sm>
+        <HeaderContent>
+            <MudTh>Task</MudTh>
+            <MudTh>Priority</MudTh>
+            <MudTh>Due Date</MudTh>
+            <MudTh>Board</MudTh>
+        </HeaderContent>
+
+        <RowTemplate>
+            <MudTd DataLabel="Task">
+                <MudLink Href=@($"/tasks/{context.Id}")>
+                    @context.Title
+                </MudLink>
+            </MudTd>
+
+            <MudTd DataLabel="Priority">
+                <MudChip T="string"
+                         Size=@Size.Small
+                         Color=@GetPriorityColor(context.Priority)>
+                    @context.PriorityName
+                </MudChip>
+            </MudTd>
+
+            <MudTd DataLabel="Due Date">
+                @if (context.DueDate.HasValue)
+                {
+                    @context.DueDate.Value.ToString("MMM dd, yyyy")
+                }
+                else
+                {
+                    <text>-</text>
+                }
+            </MudTd>
+
+            <MudTd DataLabel="Board">
+                <MudIcon Icon=@Icons.Material.Filled.ViewKanban
+                         Size=@Size.Small />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
+    <MudAlert Severity=@Severity.Info>
+        You have no assigned tasks
+    </MudAlert>
+}
+

@@ -1,0 +1,13 @@
+﻿.stat-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 12px !important;
+}
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+    }
+
+.priority-bars {
+    width: 100%;
+}

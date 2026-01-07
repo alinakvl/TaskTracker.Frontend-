@@ -1,0 +1,108 @@
+﻿@using TaskTracker.Blazor.Domain.DTOs
+@using TaskTracker.Blazor.Domain.DTOs.Boards
+
+<div class="modal-backdrop fade show"
+     @onclick=@Close>
+</div>
+
+<div class="modal fade show d-block"
+     tabindex="-1"
+     style="z-index: 1051;">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">Board Members</h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        @onclick=@Close>
+                </button>
+            </div>
+
+            <div class="modal-body p-4 text-dark">
+                @if (isLoading)
+                {
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary"
+                             role="status">
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <h6 class="fw-bold mb-3">Add Member by User ID</h6>
+
+                    <div class="row g-2 mb-4 bg-light p-3 rounded border">
+                        <div class="col-md-7">
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="User GUID (e.g. a0ddd38a...)"
+                                   @bind=@newUserIdString>
+                        </div>
+
+                        <div class="col-md-3">
+                            <select class="form-select"
+                                    @bind=@selectedRole>
+                                <option value="0">Member</option>
+                                <option value="1">Admin</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-grid">
+                            <button class="btn btn-success"
+                                    @onclick=@AddMemberById
+                                    disabled=@isAdding>
+                                @(isAdding ? "..." : "Add")
+                            </button>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold mb-3">Current Members (@members.Count)</h6>
+
+                    <div class="list-group">
+                        @foreach (var member in members)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                         style="width:40px; height:40px;">
+                                        @member.UserName.FirstOrDefault().ToString().ToUpper()
+                                    </div>
+
+                                    <div>
+                                        <div class="fw-bold">@member.UserName</div>
+                                        <small class="text-muted">@member.RoleName</small>
+                                    </div>
+                                </div>
+
+                                @if (member.UserId != Board.OwnerId)
+                                {
+                                    <button class="btn btn-sm btn-outline-danger"
+                                            @onclick=@(() => RemoveMember(member))>
+                                        Remove
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Owner</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary"
+                        @onclick=@Close>
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
