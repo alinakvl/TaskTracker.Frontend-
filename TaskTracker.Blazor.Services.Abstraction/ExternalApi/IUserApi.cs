@@ -19,4 +19,8 @@ public interface IUserApi
 
     [Patch("/users/{userId}/role")]
     Task<IApiResponse> ChangeUserRoleAsync(Guid userId, [Body] ChangeRoleDto roleDto);
+
+    [Get("/users/search")] 
+    Task<IApiResponse<List<UserDto>>> SearchUsersAsync([Query] string term);
 }
+
